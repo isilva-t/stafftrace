@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.env
+venv/
+*.db
+
+# Java
+target/
+*.class
+*.jar
+*.war
+
+# Node
+node_modules/
+dist/
+.angular/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Docker
+*.log
+
+# databases
+./agent/data
+
