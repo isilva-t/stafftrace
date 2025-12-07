@@ -25,5 +25,5 @@ dist/
 # Docker
 *.log
 
-./agent/zz_agent.txt
+zz_agent.txt
 
