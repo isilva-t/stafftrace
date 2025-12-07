@@ -1,0 +1,18 @@
+# Django
+Django==5.0.1
+
+# Database
+psycopg2-binary==2.9.9
+
+# Celery and Task Queue
+celery==5.3.4
+redis==5.0.1
+
+# HTTP requests
+requests==2.31.0
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Timezone support
+pytz==2024.1
