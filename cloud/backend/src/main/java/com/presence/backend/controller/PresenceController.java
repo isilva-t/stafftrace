@@ -79,4 +79,34 @@ public class PresenceController {
 		return ResponseEntity.ok("Presence data received");
 	}
 
+	@GetMapping("/current")
+	public ResponseEntity<List<EmployeeStatusDTO>> getCurrentStatus(
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+		
+		boolean isAuthenticated = false;
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
+			isAuthenticated = jwtService.validateToken(token);
+		}
+
+		List<CurrentStatus> statuses = currentStatusRepository.findAll();
+
+		boolean finalIsAuthenticated = isAuthenticated;
+		List<EmployeeStatusDTO> result = statuses.stream()
+					.map(status -> new EmployeeStatusDTO(
+							status.getEmployeeId(),
+							nameMappingService.getDisplayName(
+								status.getEmployeeName(),
+								status.getFakeName(),
+								finalIsAuthenticated
+							),
+							status.getIsPresent(),
+							status.getCurrentArea(),
+							status.getLastSeen()
+						))
+						.collect(Collectors.toList());
+
+		return ResponseEntity.ok(result);
+	}
+
 }
