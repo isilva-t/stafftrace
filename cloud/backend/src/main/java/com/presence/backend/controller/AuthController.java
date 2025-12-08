@@ -4,11 +4,11 @@ import com.presence.backend.model.dto.LoginRequest;
 import com.presence.backend.model.dto.LoginResponse;
 import com.presence.backend.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframwork.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(*/api/auth")
+@RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
 
