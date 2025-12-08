@@ -7,19 +7,21 @@ from .models import User, Device, StateChange, HourlySummary, SystemStatus
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['employee_name', 'fake_name', 'display_order', 'is_online_status', 'created_at']
+    list_display = ['employee_name', 'fake_name',
+                    'display_order', 'is_online_status', 'created_at']
     list_editable = ['display_order']
     search_fields = ['employee_name', 'fake_name']
     ordering = ['display_order']
 
     def is_online_status(self, obj):
-        return '🟢 Online' if obj.is_online() else '⚫ Offline'
+        return '🟢 Online' if obj.is_online() else '🔴 Offline'
     is_online_status.short_description = 'Status'
 
 
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ['user', 'ip_address', 'mac_address', 'device_name', 'created_at']
+    list_display = ['user', 'ip_address',
+                    'mac_address', 'device_name', 'created_at']
     list_filter = ['user']
     search_fields = ['ip_address', 'mac_address', 'user__employee_name']
 
@@ -37,7 +39,8 @@ class StateChangeAdmin(admin.ModelAdmin):
 
 @admin.register(HourlySummary)
 class HourlySummaryAdmin(admin.ModelAdmin):
-    list_display = ['user', 'hour', 'first_seen', 'last_seen', 'minutes_online']
+    list_display = ['user', 'hour', 'first_seen',
+                    'last_seen', 'minutes_online']
     list_filter = ['user']
     date_hierarchy = 'hour'
     readonly_fields = ['created_at']

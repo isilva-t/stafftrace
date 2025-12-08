@@ -22,13 +22,15 @@ class User(models.Model):
 
     def last_seen(self):
         """Get timestamp when user was last seen online."""
-        last_online = self.state_changes.filter(status=1).order_by('-timestamp').first()
+        last_online = self.state_changes.filter(
+            status=1).order_by('-timestamp').first()
         return last_online.timestamp if last_online else None
 
 
 class Device(models.Model):
     """Device model - each user can have multiple devices."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='devices')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='devices')
     ip_address = models.GenericIPAddressField(unique=True)
     mac_address = models.CharField(max_length=17, blank=True, null=True)
     device_name = models.CharField(max_length=100, default='Primary Device')
@@ -44,12 +46,14 @@ class Device(models.Model):
 class StateChange(models.Model):
     """State change model - records when devices go online/offline."""
     STATUS_CHOICES = [
-        (0, 'Went Offline'),
-        (1, 'Went Online'),
+        (0, '🔴 went Offline'),
+        (1, '🟢 went Online'),
     ]
 
-    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='state_changes')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='state_changes')
+    device = models.ForeignKey(
+        Device, on_delete=models.CASCADE, related_name='state_changes')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='state_changes')
     timestamp = models.DateTimeField()
     status = models.IntegerField(choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -69,7 +73,8 @@ class StateChange(models.Model):
 
 class HourlySummary(models.Model):
     """Hourly summary model - aggregated presence data per hour."""
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hourly_summaries')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='hourly_summaries')
     hour = models.DateTimeField()  # Truncated to hour (minute=0, second=0)
     first_seen = models.DateTimeField(null=True)
     last_seen = models.DateTimeField(null=True)
