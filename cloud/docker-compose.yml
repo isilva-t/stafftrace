@@ -1,0 +1,33 @@
+name: "cld"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: cloud-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ${DATA_PATH}:/data/db
+    networks:
+      - cloud-network
+
+  backend:
+    build: ./backend
+    container_name: cloud-backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+    networks:
+      - cloud-network
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/presence_monitor
+
+networks:
+  cloud-network:
+    driver: bridge
+
+
+
