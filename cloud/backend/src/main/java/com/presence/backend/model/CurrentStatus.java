@@ -17,5 +17,5 @@ public class CurrentStatus {
 	private Boolean			isPresent;
 	private String			currentArea;
 	private LocalDateTime	lastSeen;
-	private	LocalDateTime	updateAt;
+	private	LocalDateTime	updatedAt;
 }
