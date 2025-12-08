@@ -15,34 +15,33 @@ public class JwtService {
 	private final String SECRET_KEY = System.getenv("JWT_SECRET");
 	private final long EXPIRATION_TIME = 86400000; //24 hours
 
-	private key getSigningKey() {
+	private Key getSigningKey() {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	}
 
 	public String generateToken(String username) {
 		return Jwts.builder()
 				.setSubject(username)
-				.setIssueAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillies() + EXPIRATION_TIME))
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(getSigningKey(), SignatureAlgorithm.HS256)
 				.compact();
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parseBuilder()
-				.SetSigningKey(getSigningKey())
+			Jwts.parserBuilder()
+				.setSigningKey(getSigningKey())
 				.build()
 				.parseClaimsJws(token);
 			return true;
 			} catch (Exception e) {
 				return false;
-			}
 		}
 	}
 
 	public String extractUsername(String token) {
-		Claims claims = Jwts.parseBuilder()
+		Claims claims = Jwts.parserBuilder()
 			.setSigningKey(getSigningKey())
 			.build()
 			.parseClaimsJws(token)
