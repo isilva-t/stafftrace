@@ -4,6 +4,7 @@ Celery configuration for agent project.
 import os
 from celery import Celery
 from celery.schedules import crontab
+from monitoring import constants
 
 # Set Django settings module
 os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings'
@@ -20,7 +21,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'ping-devices': {
         'task': 'monitoring.tasks.ping_all_devices',
-        'schedule': 60.0,  # Every 60 seconds
+        'schedule': constants.PING_INTERVAL_SECONDS,
     },
     'send-heartbeat': {
         'task': 'monitoring.tasks.send_heartbeat_to_cloud',
