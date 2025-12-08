@@ -1,4 +1,4 @@
-package com.presence.backend.model.dto
+package com.presence.backend.model.dto;
 
 import lombok.Data;
 import java.util.List;
