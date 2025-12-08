@@ -19,14 +19,13 @@ def ping_device(ip_address, timeout=1):
     Returns:
         bool: True if ping successful, False otherwise
     """
-    param = '-n' if platform.system().lower() == 'windows' else '-c'
-    command = ['ping', param, '1', '-W', str(timeout), ip_address]
+    command = ['ping', '-c', '1', '-W', str(timeout), ip_address]
 
     try:
         result = subprocess.run(
             command,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             timeout=timeout + 1
         )
         return result.returncode == 0
@@ -60,7 +59,8 @@ def send_heartbeat(devices_online):
             timeout=10
         )
         response.raise_for_status()
-        print(f"Heartbeat sent successfully: {len(devices_online)} devices online")
+        print(f"Heartbeat sent successfully:", end=" ")
+        print(f"{len(devices_online)} devices online")
         return True
     except requests.RequestException as e:
         print(f"Error sending heartbeat: {e}")
