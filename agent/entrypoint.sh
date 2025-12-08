@@ -20,4 +20,4 @@ echo "Starting Celery beat in background..."
 celery -A config beat -l info &
 
 echo "Starting Django development server..."
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8000 --verbosity 2
