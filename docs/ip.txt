@@ -9,12 +9,16 @@ laptop (development)
 
 # local test devices for development
 
+
+# ivan devices
 printer
 172.20.219.86
 
 lamp
 172.20.219.220
 
+
+#teixeira devices
 candle
 172.20.219.110
 
