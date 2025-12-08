@@ -9,7 +9,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ${DATA_PATH}/data:/app/data
+      - .:/app
+      - ${DATA_PATH}/data:/var/lib/postgresql/data
     networks:
       - st-agent
 
