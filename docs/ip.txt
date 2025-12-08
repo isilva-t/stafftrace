@@ -1,0 +1,23 @@
+# ip's to serve as a test environment in deveolpment
+
+#main devices
+gateway
+172.20.219.134
+
+laptop (development)
+172.20.219.134
+
+# local test devices for development
+
+printer
+172.20.219.86
+
+lamp
+172.20.219.220
+
+candle
+172.20.219.110
+
+clothes-dryer
+172.20.219.236
+
