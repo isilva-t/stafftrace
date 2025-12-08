@@ -109,4 +109,31 @@ public class PresenceController {
 		return ResponseEntity.ok(result);
 	}
 
+	@GetMapping("/daily")
+	public ResponseEntity<List<DailyPresence>> getDailyReport(
+			@RequestParam String date,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+		
+		boolean isAuthenticated = false;
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
+			isAuthenticated = jwtService.validateToken(token);
+		}
+
+		LocalDate queryDate = LocalDate.parse(date);
+		List<DailyPresence> records = dailyPresenceRepository.findByDate(queryDate);
+
+		//apply name mapping
+		boolean finalIsAuthenticated = isAuthenticated;
+		records.forEach(record -> {
+			String displayName = nameMappingService.getDisplayName(
+				record.getEmployeeName(),
+				record.getFakeName(),
+				finalIsAuthenticated
+			);
+			record.setEmployeeName(displayName);
+		});
+		
+		return ResponseEntity.ok(records);
+	}
 }
