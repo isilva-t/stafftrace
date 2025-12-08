@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Data
 @Document(collection = "daily_presence")
-@CompoundIndex(name = "employee_date_idx", def = "{'employeeId': 1, 'date': 1}", unique = true}
+@CompoundIndex(name = "employee_date_idx", def = "{'employeeId': 1, 'date': 1}", unique = true)
 public class DailyPresence {
 	@Id
 	private String id;
