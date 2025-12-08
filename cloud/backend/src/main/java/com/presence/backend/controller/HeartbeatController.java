@@ -20,7 +20,7 @@ public class HeartbeatController {
 	@PostMapping("/heartbeat")
 	public ResponseEntity<String> receiveHeartbeat(@RequestBody HeartbeatRequest request) {
 	
-		LocalDateTimwe now = LocalDateTime.now();
+		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime tenMinutesAgo = now.minusMinutes(10);
 
 		// mark devices in list as present
@@ -31,7 +31,7 @@ public class HeartbeatController {
 
 			status.setEmployeeId(device.getEmployeeId());
 			status.setEmployeeName(device.getEmployeeName());
-			status.setFakename(device.getFaceName());
+			status.setFakeName(device.getFakeName());
 			status.setIsPresent(true);
 			status.setCurrentArea(device.getArea());
 			status.setLastSeen(now);
@@ -43,7 +43,7 @@ public class HeartbeatController {
 		// makr devices not in list as absent (if not seen in 10 minutes)
 		currentStatusRepository.findAll().forEach(status-> {
 			boolean inCurrentList = request.getDevicesOnline().stream()
-					.anyMatch(d -> d.getEmployeeId().equals(status.getEmployeeId()))
+					.anyMatch(d -> d.getEmployeeId().equals(status.getEmployeeId()));
 
 			if (!inCurrentList && status.getLastSeen().isBefore(tenMinutesAgo)) {
 				status.setIsPresent(false);
