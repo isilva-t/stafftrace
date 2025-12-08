@@ -5,6 +5,8 @@ __pycache__/
 .env
 venv/
 *.db
+zz_agent.txt
+celerybeat-schedule
 
 # Java
 target/
@@ -25,5 +27,4 @@ dist/
 # Docker
 *.log
 
-zz_agent.txt
 
