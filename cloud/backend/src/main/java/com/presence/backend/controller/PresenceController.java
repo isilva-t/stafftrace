@@ -42,7 +42,7 @@ public class PresenceController {
 
 			//find or create daily presence record
 			DailyPresence daily = dailyPresenceRepository
-								.findByEmployeeInAndDate(data.getEmployeeId(), date)
+								.findByEmployeeIdAndDate(data.getEmployeeId(), date)
 								.orElse(new DailyPresence());
 
 			boolean isNew = daily.getId() == null;
@@ -60,7 +60,7 @@ public class PresenceController {
 			
 			LocalTime newLastSeen = LocalTime.parse(data.getLastSeen());
 			if (isNew || daily.getLastSeen() == null
-				|| newLastSeen.isAfter(daily.getLastSeen()) {
+				|| newLastSeen.isAfter(daily.getLastSeen())) {
 				daily.setLastSeen(newLastSeen);
 			}
 
