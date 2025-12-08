@@ -1,0 +1,19 @@
+package com.presence.backend.model.dto;
+
+import lombok.Data;
+import java.util.List;
+
+@Data
+public class HeartbeatRequest {
+	private String	siteId;
+	private String	timestamp;
+	private List<DeviceOnLine> devicesOnLine;
+
+	@Data
+	public static class DeviceOnline {
+		private Integer employeeId;
+		private String	employeeName;
+		private String	fakeName;
+		private String	area;
+	}
+}
