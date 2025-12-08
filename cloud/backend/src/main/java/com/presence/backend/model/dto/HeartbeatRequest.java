@@ -7,7 +7,7 @@ import java.util.List;
 public class HeartbeatRequest {
 	private String	siteId;
 	private String	timestamp;
-	private List<DeviceOnLine> devicesOnLine;
+	private List<DeviceOnline> devicesOnline;
 
 	@Data
 	public static class DeviceOnline {
