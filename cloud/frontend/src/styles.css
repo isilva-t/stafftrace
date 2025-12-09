@@ -1,1 +1,77 @@
-/* You can add global styles to this file, and also import other style files */
+/* Color Variables */
+:root {
+    --color-online: #10b981;
+    --color-offline: #6b7280;
+    --color-primary: #2563eb;
+    --color-background: #ffffff;
+    --color-text: #1f2937;
+    --color-border: #e5e7eb;
+    --color-hover: #f3f4f6;
+    --color-header-bg: #f9fafb;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+/* Buttons */
+button {
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    background: white;
+    color: var(--color-text);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+button:hover:not(:disabled) {
+    background: var(--color-hover);
+}
+
+button.primary {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    border: 1px solid var(--color-border);
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+th {
+    background: var(--color-header-bg);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+tr:hover {
+    background: var(--color-hover);
+}
