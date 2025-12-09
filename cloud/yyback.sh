@@ -23,7 +23,7 @@ IGNORE_PATTERNS=(
     '!*.jpg'
     '!.DS_Store'
     "!$OUTPUT_FILE"             # Don't output the output file itself
-    '!*out.sh'                  # Don't output this script
+    '!yy.sh'                  # Don't output this script
     '!HELP.md'                  # Skip Spring Boot help file
     '!mvnw'                     # Skip Maven wrapper scripts
     '!mvnw.cmd'
