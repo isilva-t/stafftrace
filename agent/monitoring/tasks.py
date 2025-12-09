@@ -132,24 +132,26 @@ def send_hourly_summary_to_cloud():
         # Only send if there was activity
         if first_seen:
             # Save locally
-            HourlySummary.objects.create(
+            HourlySummary.objects.update_or_create(
                 user=user,
                 hour=start_time,
-                first_seen=first_seen,
-                last_seen=last_seen,
-                minutes_online=int(minutes_online)
+                defaults={
+                    'first_seen': first_seen,
+                    'last_seen': last_seen,
+                    'minutes_online': int(minutes_online)
+                }
             )
 
             # Prepare for cloud
             summaries.append({
-                'employee_id': user.id,
-                'employee_name': user.employee_name,
-                'fake_name': user.fake_name,
+                'employeeId': user.id,
+                'employeeName': user.employee_name,
+                'fakeName': user.fake_name,
                 'date': start_time.date().isoformat(),
                 'hour': start_time.hour,
-                'first_seen': first_seen.isoformat(),
-                'last_seen': last_seen.isoformat(),
-                'minutes_online': int(minutes_online)
+                'firstSeen': first_seen.time().isoformat(),
+                'lastSeen': last_seen.time().isoformat(),
+                'minutesOnline': int(minutes_online)
             })
 
     if summaries:
