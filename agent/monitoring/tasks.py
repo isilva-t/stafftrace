@@ -42,7 +42,8 @@ def ping_all_devices():
                 device_failure_tracker[device.id] = timezone.now()
             else:
                 # Check if threshold reached
-                time_failing = (timezone.now() - device_failure_tracker[device.id]).total_seconds()
+                time_failing = (
+                    timezone.now() - device_failure_tracker[device.id]).total_seconds()
 
                 if time_failing >= OFFLINE_THRESHOLD_SECONDS:
                     # Mark offline (only if was online)
@@ -66,9 +67,9 @@ def send_heartbeat_to_cloud():
     for user in User.objects.all():
         if user.is_online():
             devices_online.append({
-                'employee_id': user.id,
-                'employee_name': user.employee_name,
-                'fake_name': user.fake_name,
+                'employeeId': user.id,
+                'employeeName': user.employee_name,
+                'fakeName': user.fake_name,
                 'area': 'default'  # Hardcoded for MVP
             })
 
@@ -117,13 +118,15 @@ def send_hourly_summary_to_cloud():
                         first_seen = change.timestamp
                 elif change.status == 0:  # Went offline
                     if online_start:
-                        minutes_online += (change.timestamp - online_start).total_seconds() / 60
+                        minutes_online += (change.timestamp -
+                                           online_start).total_seconds() / 60
                         last_seen = change.timestamp
                         online_start = None
 
             # If still online at end of hour
             if online_start:
-                minutes_online += (end_time - online_start).total_seconds() / 60
+                minutes_online += (end_time -
+                                   online_start).total_seconds() / 60
                 last_seen = end_time
 
         # Only send if there was activity

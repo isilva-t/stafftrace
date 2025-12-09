@@ -49,7 +49,7 @@ def send_heartbeat(devices_online):
     payload = {
         'site_id': settings.SITE_ID,
         'timestamp': timezone.now().isoformat(),
-        'devices_online': devices_online
+        'devicesOnline': devices_online
     }
 
     try:
@@ -80,7 +80,7 @@ def send_hourly_summary(summaries):
     payload = {
         'site_id': settings.SITE_ID,
         'timestamp': timezone.now().isoformat(),
-        'presence_data': summaries
+        'presenceData': summaries
     }
 
     try:
