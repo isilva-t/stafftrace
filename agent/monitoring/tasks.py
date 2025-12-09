@@ -14,7 +14,10 @@ device_failure_tracker = {}
 
 @shared_task
 def ping_all_devices():
-    """Ping all active devices and update state changes."""
+    """Ping all active devices and update state changes.
+    send heartbeat if there is changes"""
+
+    changes = 0
     for device in Device.objects.select_related('user').all():
         ping_success = ping_device(device.ip_address)
 
@@ -34,6 +37,7 @@ def ping_all_devices():
                     timestamp=timezone.now(),
                     status=1  # went online
                 )
+                changes += 1
                 print(f"{device.user.employee_name} came ONLINE")
         else:
             # Ping failed
@@ -54,9 +58,12 @@ def ping_all_devices():
                             timestamp=timezone.now(),
                             status=0  # went offline
                         )
+                        changes += 1
                         print(f"{device.user.employee_name} went OFFLINE")
                     # Clear tracker
                     device_failure_tracker.pop(device.id, None)
+    if changes > 0:
+        send_heartbeat_to_cloud()
 
 
 @shared_task
