@@ -1,0 +1,25 @@
+<div class="view-header">
+    <h2>Current Status</h2>
+    <div class="view-actions">
+        <span class="timestamp">{{ lastUpdated | date:'short' }}</span>
+        <button (click)="refresh()" [disabled]="loading">Refresh ↻</button>
+    </div>
+</div>
+<div *ngIf="loading" class="loading">Loading...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="!loading && !error" class="employee-grid">
+    <div *ngFor="let emp of employees" class="employee-card">
+        <div class="employee-header">
+            <span class
+                  None="emp.isPresent ? 'status-indicator status-online' : 'status-indicator status-offline'">
+                {{ emp.isPresent ? '●' : '●' }}
+            </span>
+            <h3>{{ emp.employeeName }}</h3>
+        </div>
+        <div class="employee-details">
+            <p *ngIf="emp.isPresent">Present since {{ formatTime(emp.lastSeen) }}</p>
+            <p *ngIf="!emp.isPresent">Last seen {{ formatTime(emp.lastSeen) }}</p>
+            <p class="area">Area: {{ emp.currentArea }}</p>
+        </div>
+    </div>
+</div>
