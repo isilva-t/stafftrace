@@ -45,7 +45,7 @@ public class HeartbeatController {
 			boolean inCurrentList = request.getDevicesOnline().stream()
 					.anyMatch(d -> d.getEmployeeId().equals(status.getEmployeeId()));
 
-			if (!inCurrentList && status.getLastSeen().isBefore(tenMinutesAgo)) {
+			if (!inCurrentList) {
 				status.setIsPresent(false);
 				status.setUpdatedAt(now);
 				currentStatusRepository.save(status);
