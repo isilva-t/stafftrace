@@ -9,6 +9,7 @@ OUTPUT_FILE="zz_backend.txt"
 
 # Ignore patterns for Spring Boot project
 IGNORE_PATTERNS=(
+	'!frontend/'
     '!target/**'                # Exclude Maven build output
     '!.mvn/**'                  # Exclude Maven wrapper internals
     '!__pycache__/**'
@@ -23,7 +24,8 @@ IGNORE_PATTERNS=(
     '!*.jpg'
     '!.DS_Store'
     "!$OUTPUT_FILE"             # Don't output the output file itself
-    '!yy.sh'                  # Don't output this script
+    '!y*'                  # Don't output this script
+	'!zz*'
     '!HELP.md'                  # Skip Spring Boot help file
     '!mvnw'                     # Skip Maven wrapper scripts
     '!mvnw.cmd'
