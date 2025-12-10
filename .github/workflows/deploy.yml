@@ -43,7 +43,9 @@ jobs:
     - name: Build Frontend
       run: |
         cd cloud
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} -f frontend/Dockerfile frontend/
+        docker build \
+          --build-arg API_URL=/api \
+          -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} -f frontend/Dockerfile frontend/
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }}
     
     - name: Get GKE Credentials
