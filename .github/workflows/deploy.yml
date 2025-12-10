@@ -1,0 +1,53 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER_NAME: ${{ secrets.GKE_CLUSTER_NAME }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+    
+    - name: Configure Docker for GCR
+      run: gcloud auth configure-docker
+    
+    - name: Build Backend
+      run: |
+        cd cloud
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }} -f backend/Dockerfile backend/
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }}
+    
+    - name: Build Frontend
+      run: |
+        cd cloud
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} -f frontend/Dockerfile frontend/
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }}
+    
+    - name: Get GKE Credentials
+      run: |
+        gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
+          --zone ${{ secrets.GKE_ZONE }}
+    
+    - name: Deploy to GKE
+      run: |
+        cd cloud/kubernetes
+        kubectl set image deployment/backend backend=gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend:${{ github.sha }}
+        kubectl set image deployment/frontend frontend=gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }}
+        kubectl rollout status deployment/backend
+        kubectl rollout status deployment/frontend
