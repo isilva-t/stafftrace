@@ -3,11 +3,13 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+
+
 RUN npm ci
 
 COPY . .
-
-RUN sed -i "s|localhost:8080/api|${API_URL}|g" src/environments/environment.ts
+ARG API_URL
+RUN sed -i "s|http://localhost:8080/api|${API_URL}|g" src/environments/environment.ts
 
 
 RUN npm run build

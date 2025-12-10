@@ -24,6 +24,7 @@ IGNORE_PATTERNS=(
 	'!zz*'
     "!$OUTPUT_FILE"             # Don't output the output file itself
 	'!y*'
+	'!docker-compose.yml'
     '!package-lock.json'        # Skip lock file (too large)
     '!*.spec.ts'                # Skip test files
 )

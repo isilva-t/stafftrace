@@ -5,8 +5,7 @@ __pycache__/
 .env
 venv/
 *.db
-zz_agent.txt
-zz_backend.txt
+zz_*.txt
 celerybeat-schedule
 
 # Java
