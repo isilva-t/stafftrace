@@ -25,6 +25,22 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/presence_monitor
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ${FRONTEND_DOCKERFILE}
+      args:
+        - API_URL=${API_URL}
+    container_name: cloud-frontend
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    volumes:
+      - ./frontend/src:/app/src:ro
+    depends_on:
+      - backend
+    networks:
+      - cloud-network
+
 networks:
   cloud-network:
     driver: bridge
