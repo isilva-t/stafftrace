@@ -44,7 +44,7 @@ jobs:
       run: |
         cd cloud
         docker build \
-          --build-arg API_URL=/api \
+          --build-arg API_URL=https://api.stafftrace.xyz/api \
           -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }} -f frontend/Dockerfile frontend/
         docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend:${{ github.sha }}
     
