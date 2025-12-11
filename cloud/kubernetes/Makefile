@@ -1,5 +1,8 @@
 .PHONY: deploy status logs clean
 
+all:
+	grep "^[a-z]" Makefile 
+
 deploy:
 	kubectl apply -f backend-secret.yaml
 	kubectl apply -f backend-deployment.yaml
