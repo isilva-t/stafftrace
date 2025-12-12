@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
@@ -207,6 +211,101 @@ public class PresenceController {
 							avgHoursPerDay);
 				})
 				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(result);
+	}
+
+	@GetMapping("/employee/{employeeId}/monthly")
+	public ResponseEntity<EmployeeMonthlyDetailDTO> getEmployeeMonthlyDetail(
+			@PathVariable Integer employeeId,
+			@RequestParam int year,
+			@RequestParam int month,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+		boolean isAuthenticated = false;
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
+			isAuthenticated = jwtService.validateToken(token);
+		}
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+		int daysInMonth = endDate.getDayOfMonth();
+
+		List<DailyPresence> records = dailyPresenceRepository
+				.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
+
+		Map<LocalDate, DailyPresence> recordMap = records.stream()
+				.collect(Collectors.toMap(DailyPresence::getDate, r -> r));
+
+		String employeeName = "Unknown";
+		String fakeName = "Unknown";
+		if (!records.isEmpty()) {
+			DailyPresence firstRecord = records.get(0);
+			employeeName = firstRecord.getEmployeeName();
+			fakeName = firstRecord.getFakeName();
+		}
+
+		String displayName = nameMappingService.getDisplayName(
+				employeeName, fakeName, isAuthenticated);
+
+		List<DailyDetailDTO> dailyDetails = new ArrayList<>();
+		double totalHours = 0.0;
+		int daysPresent = 0;
+
+		for (int day = 1; day <= daysInMonth; day++) {
+			LocalDate currentDate = LocalDate.of(year, month, day);
+			DayOfWeek dayOfWeek = currentDate.getDayOfWeek();
+			String dayName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+			DailyPresence record = recordMap.get(currentDate);
+
+			String firstSeen = null;
+			String lastSeen = null;
+			double hours = 0.0;
+			String status;
+
+			if (record != null) {
+				firstSeen = record.getFirstSeen() != null ? record.getFirstSeen().toString() : null;
+				lastSeen = record.getLastSeen() != null ? record.getLastSeen().toString() : null;
+				hours = record.getHoursPresent() != null ? record.getHoursPresent() : 0.0;
+
+				if (hours >= 8.0) {
+					status = "Full day";
+				} else if (hours > 0) {
+					status = "Partial";
+				} else {
+					status = "Absent";
+				}
+
+				totalHours += hours;
+				if (hours > 0) {
+					daysPresent++;
+				}
+			} else {
+				if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+					status = "Weekend";
+				} else {
+					status = "Absent";
+				}
+			}
+
+			dailyDetails.add(new DailyDetailDTO(
+					currentDate.toString(),
+					dayName,
+					firstSeen,
+					lastSeen,
+					hours,
+					status));
+		}
+
+		EmployeeMonthlyDetailDTO result = new EmployeeMonthlyDetailDTO(
+				employeeId,
+				displayName,
+				year,
+				month,
+				dailyDetails,
+				totalHours,
+				daysPresent);
 
 		return ResponseEntity.ok(result);
 	}
