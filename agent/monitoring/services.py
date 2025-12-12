@@ -47,7 +47,7 @@ def send_heartbeat(devices_online):
         bool: True if successful, False otherwise
     """
     payload = {
-        'site_id': settings.SITE_ID,
+        'siteId': settings.SITE_ID,
         'timestamp': timezone.now().isoformat(),
         'devicesOnline': devices_online
     }
@@ -79,7 +79,7 @@ def send_hourly_summary(summaries, downtime_data=None):
         bool: True if successful, False otherwise
     """
     payload = {
-        'site_id': settings.SITE_ID,
+        'siteId': settings.SITE_ID,
         'timestamp': timezone.now().isoformat(),
         'presenceData': summaries
     }

@@ -6,6 +6,32 @@
     </div>
 </div>
 
+<div class="agent-health-banner" [ngClass]="{
+  'status-healthy': agentStatus === 'HEALTHY',
+  'status-degraded': agentStatus === 'DEGRADED',
+  'status-offline': agentStatus === 'OFFLINE',
+  'status-unknown': agentStatus === 'UNKNOWN'
+}">
+  <div *ngIf="agentHealthData.length > 0">
+    <span class="status-icon">
+      {{ agentStatus === 'HEALTHY' ? '✅' :
+         agentStatus === 'DEGRADED' ? '⚠️' :
+         agentStatus === 'OFFLINE' ? '🔴' : '❓' }}
+    </span>
+    <span class="status-text">
+      Agent {{ agentHealthData[0].siteId }} - {{ agentStatus }}
+    </span>
+    <span class="status-time">
+      Last heartbeat: {{ agentLastSeen }}
+    </span>
+  </div>
+  <div *ngIf="agentHealthData.length === 0">
+    <span class="status-icon">❓</span>
+    <span class="status-text">No agent data available</span>
+  </div>
+</div>
+
+
 <div *ngIf="downtimes.length > 0" class="downtime-banner">
     <span class="warning-icon">⚠️</span>
     <div class="downtime-text">
@@ -16,6 +42,7 @@
         <p class="downtime-note">Presence data may be incomplete during these periods.</p>
     </div>
 </div>
+
 
 <div *ngIf="loading" class="loading">Loading...</div>
 <div *ngIf="error" class="error">{{ error }}</div>

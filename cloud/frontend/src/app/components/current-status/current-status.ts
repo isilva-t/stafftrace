@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { EmployeeStatus } from '../../models/employee.model';
 import { AgentDowntime } from '../../models/downtime.model';
+import { AgentHealth, AgentStatus } from '../../models/agent-health.model';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -18,6 +19,9 @@ export class CurrentStatus implements OnInit, OnDestroy {
   error = '';
   lastUpdated = new Date();
   downtimes: AgentDowntime[] = [];
+  agentHealthData: AgentHealth[] = []
+  agentStatus: AgentStatus = AgentStatus.UNKNOWN;
+  agentLastSeen: string = "";
   private refreshInterval: any;
 
   constructor(private apiService: ApiService) { }
@@ -59,6 +63,17 @@ export class CurrentStatus implements OnInit, OnDestroy {
         console.error('Failed to load downtimes:', err);
       }
     });
+
+    this.apiService.getAgentHealth().subscribe({
+      next: (data) => {
+        this.agentHealthData = data;
+        this.calculateAgentStatus();
+      },
+      error: (err) => {
+        console.error('Failed to load agent health:', err);
+        this.agentStatus = AgentStatus.UNKNOWN;
+      }
+    });
   }
 
   refresh(): void {
@@ -79,5 +94,35 @@ export class CurrentStatus implements OnInit, OnDestroy {
     const startTime = start.toLocaleTimeString(environment.locale, { hour: '2-digit', minute: '2-digit' });
     const endTime = end.toLocaleTimeString(environment.locale, { hour: '2-digit', minute: '2-digit' });
     return `${startTime} - ${endTime}`;
+  }
+
+  private calculateAgentStatus(): void {
+    if (this.agentHealthData.length === 0) {
+      this.agentStatus = AgentStatus.UNKNOWN;
+      this.agentLastSeen = 'No agent data';
+      return;
+    }
+
+    const agent = this.agentHealthData[0];
+
+    if (!agent.hasLastHeartbeat || !agent.lastHeartbeat) {
+      this.agentStatus = AgentStatus.UNKNOWN;
+      this.agentLastSeen = 'No Heartbeat received';
+      return;
+    }
+
+    const now = new Date();
+    const lastHeartbeat = new Date(agent.lastHeartbeat);
+    const secondsAgo = Math.floor((now.getTime() - lastHeartbeat.getTime()) / 1000)
+
+    if (secondsAgo < environment.healthy) {
+      this.agentStatus = AgentStatus.HEALTHY;
+    } else if (secondsAgo <= environment.degraded) {
+      this.agentStatus = AgentStatus.DEGRADED;
+    } else {
+      this.agentStatus = AgentStatus.OFFLINE;
+    }
+
+    this.agentLastSeen = `${secondsAgo} seconds ago`;
   }
 }
