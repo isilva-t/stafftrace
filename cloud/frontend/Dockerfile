@@ -9,7 +9,7 @@ RUN npm ci
 
 COPY . .
 ARG API_URL
-RUN sed -i "s|http://stafftrace.xyz:8080/api'|${API_URL}|g" src/environments/environment.ts
+RUN sed -i "s|http://stafftrace.xyz:8080/api|${API_URL}|g" src/environments/environment.ts
 
 
 RUN npm run build
