@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -155,6 +157,58 @@ public class PresenceController {
 		});
 
 		return ResponseEntity.ok(records);
+	}
+
+	@GetMapping("/monthly")
+	public ResponseEntity<List<MonthlyPresenceDTO>> getMonthlyReport(
+			@RequestParam int year,
+			@RequestParam int month,
+			@RequestHeader(value = "Authorization", required = false) String authHeader) {
+
+		boolean isAuthenticated = false;
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
+			isAuthenticated = jwtService.validateToken(token);
+		}
+
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = startDate.plusMonths(1).minusDays(1);
+
+		List<DailyPresence> records = dailyPresenceRepository
+				.findByDateBetween(startDate, endDate);
+
+		Map<Integer, List<DailyPresence>> groupByEmployee = records.stream()
+				.collect(Collectors.groupingBy(DailyPresence::getEmployeeId));
+
+		boolean finalIsAuthenticated = isAuthenticated;
+		List<MonthlyPresenceDTO> result = groupByEmployee.entrySet().stream()
+				.map(entry -> {
+					Integer employeeId = entry.getKey();
+					List<DailyPresence> employeeRecords = entry.getValue();
+
+					DailyPresence firstRecord = employeeRecords.get(0);
+					String displayName = nameMappingService.getDisplayName(
+							firstRecord.getEmployeeName(),
+							firstRecord.getFakeName(),
+							finalIsAuthenticated);
+
+					double totalHours = employeeRecords.stream()
+							.mapToDouble(DailyPresence::getHoursPresent)
+							.sum();
+
+					int daysPresent = employeeRecords.size();
+					double avgHoursPerDay = totalHours / daysPresent;
+
+					return new MonthlyPresenceDTO(
+							employeeId,
+							displayName,
+							totalHours,
+							daysPresent,
+							avgHoursPerDay);
+				})
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok(result);
 	}
 
 	@GetMapping("/downtimes")
