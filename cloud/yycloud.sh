@@ -2,14 +2,17 @@
 
 # Script to concatenate 'backend' folder files for code review/sharing
 
-OUTPUT_FILE="zz_backend.txt"
+OUTPUT_FILE="zz_cloud.txt"
 
 # Clear the output file if it exists
 > "$OUTPUT_FILE"
 
+
+
 # Ignore patterns for Spring Boot project
 IGNORE_PATTERNS=(
 	'!frontend/'
+	'!backend/'
     '!target/**'                # Exclude Maven build output
     '!.mvn/**'                  # Exclude Maven wrapper internals
     '!__pycache__/**'
@@ -84,3 +87,7 @@ echo ""
 echo "Done."
 echo "Files processed: $FILE_COUNT"
 echo "Total lines in $OUTPUT_FILE: $LINE_COUNT"
+
+echo "END OF last file!" >> "$OUTPUT_FILE"
+echo "Root directory of this file: " >> "$OUTPUT_FILE"
+echo "$(pwd)" >> "$OUTPUT_FILE"

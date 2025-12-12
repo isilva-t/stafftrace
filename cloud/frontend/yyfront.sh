@@ -2,13 +2,14 @@
 
 # Script to concatenate 'frontend' folder files for code review/sharing
 
-OUTPUT_FILE="zz_frontend.txt"
+OUTPUT_FILE="../zz_frontend.txt"
 
 # Clear the output file if it exists
 > "$OUTPUT_FILE"
 
 # Ignore patterns for Angular project
 IGNORE_PATTERNS=(
+    '!README.md'
     '!node_modules/**'          # Exclude npm packages
     '!dist/**'                  # Exclude build output
     '!.angular/**'              # Exclude Angular cache
@@ -44,7 +45,7 @@ search_pid=$!
 wait $search_pid
 
 # 2. Create a sorted file list summary
-eval "rg . --files $GLOB_ARGS" > /tmp/frontend_files_list.txt
+eval "rg . --files $GLOB_ARGS " > /tmp/frontend_files_list.txt
 
 if [ -s /tmp/frontend_files_list.txt ]; then
     tmp_output=$(mktemp)
@@ -74,3 +75,7 @@ echo ""
 echo "Done."
 echo "Files processed: $FILE_COUNT"
 echo "Total lines in $OUTPUT_FILE: $LINE_COUNT"
+
+echo "END OF last file!" >> "$OUTPUT_FILE"
+echo "Root directory of this file: " >> "$OUTPUT_FILE"
+echo "$(pwd)" >> "$OUTPUT_FILE"
