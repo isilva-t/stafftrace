@@ -1,0 +1,38 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: 20px;
+}
+
+nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+nav a {
+    padding: 10px 20px;
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    color: var(--color-text);
+    border-radius: 4px;
+}
+
+nav a.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+nav a:hover:not(.active) {
+    background: var(--color-hover);
+}

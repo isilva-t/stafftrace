@@ -1,0 +1,33 @@
+<div class="view-header">
+    <h2>Monthly Report</h2>
+    <div class="month-controls">
+        <button (click)="previousMonth()">◀</button>
+        <span class="month-display">{{ getMonthName() }}</span>
+        <button (click)="nextMonth()">▶</button>
+    </div>
+</div>
+<div *ngIf="loading" class="loading">Loading...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+<table *ngIf="!loading && !error">
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Total Hours</th>
+            <th>Days Present</th>
+            <th>Avg/Day</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let record of records">
+            <td>
+                <a [routerLink]="['/employee', record.employeeId]"
+                   [queryParams]="{year: selectedYear, month: selectedMonth}">
+                    {{ record.employeeName }}
+                </a>
+            </td>
+            <td>{{ record.totalHours.toFixed(1) }}h</td>
+            <td>{{ record.daysPresent }} days</td>
+            <td>{{ record.avgHoursPerDay.toFixed(1) }}h</td>
+        </tr>
+    </tbody>
+</table>

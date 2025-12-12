@@ -5,7 +5,11 @@
             <button class="primary">Login</button>
         </div>
     </header>
+    <nav>
+        <a routerLink="/current" routerLinkActive="active">Current Status</a>
+        <a routerLink="/monthly" routerLinkActive="active">Monthly Summary</a>
+    </nav>
     <main>
-        <app-current-status></app-current-status>
+        <router-outlet></router-outlet>
     </main>
 </div>
