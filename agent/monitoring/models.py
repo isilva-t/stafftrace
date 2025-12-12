@@ -79,6 +79,7 @@ class HourlySummary(models.Model):
     first_seen = models.DateTimeField(null=True)
     last_seen = models.DateTimeField(null=True)
     minutes_online = models.IntegerField(default=0)
+    synced = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -35,4 +35,8 @@ app.conf.beat_schedule = {
         'task': 'monitoring.tasks.update_system_heartbeat',
         'schedule': 30.0,  # Every 30 seconds
     },
+    'retry-unsynced-summaries': {
+        'task': 'monitoring.tasks.retry_unsynced_summaries',
+                'schedule': 900.0,  # 900s = 15 minutes
+    },
 }

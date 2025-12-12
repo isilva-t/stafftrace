@@ -139,18 +139,19 @@ def send_hourly_summary_to_cloud():
         # Only send if there was activity
         if first_seen:
             # Save locally
-            HourlySummary.objects.update_or_create(
+            summary_obj, created = HourlySummary.objects.update_or_create(
                 user=user,
                 hour=start_time,
                 defaults={
                     'first_seen': first_seen,
                     'last_seen': last_seen,
-                    'minutes_online': int(minutes_online)
+                    'minutes_online': int(minutes_online),
+                    'synced': False
                 }
             )
 
             # Prepare for cloud
-            summaries.append({
+            payload = {
                 'employeeId': user.id,
                 'employeeName': user.employee_name,
                 'fakeName': user.fake_name,
@@ -159,10 +160,51 @@ def send_hourly_summary_to_cloud():
                 'firstSeen': first_seen.time().isoformat(),
                 'lastSeen': last_seen.time().isoformat(),
                 'minutesOnline': int(minutes_online)
-            })
+            }
+
+            summaries.append((payload, summary_obj))
 
     if summaries:
-        send_hourly_summary(summaries)
+        for payload, summary_obj in summaries:
+            success = send_hourly_summary([payload])
+            if success:
+                summary_obj.synced = True
+                summary_obj.save()
+
+
+@shared_task
+def retry_unsynced_summaries():
+    """Retry sending unsynced hourly summaries to cloud (newest first)."""
+
+    unsynced = HourlySummary.objects.filter(synced=False).order_by('-hour')
+
+    if not unsynced.exists():
+        print("no unsyncend summaries to retry")
+        return
+
+    print(f"retrying {unsynced.count()} unsynced summaries...")
+
+    for summary in unsynced:
+        payload = {
+            'employeeId': summary.user.id,
+            'employeeName': summary.user.employee_name,
+            'fakeName': summary.user.fake_name,
+            'date': summary.hour.date().isoformat(),
+            'hour': summary.hour.hour,
+            'firstSeen': summary.first_seen.time().isoformat(),
+            'lastSeen': summary.last_seen.time().isoformat(),
+            'minutesOnline': summary.minutes_online
+        }
+
+        success = send_hourly_summary([payload])
+        if success:
+            summary.synced = True
+            summary.save()
+            print(f"✓ Synced summary for", end=" ")
+            print(f"{summary.user.employee_name} at {summary.hour}")
+        else:
+            print(f"✗ Failed to sync summary for", end=" ")
+            print(f"{summary.user.employee_name} at {summary.hour}")
 
 
 @shared_task
