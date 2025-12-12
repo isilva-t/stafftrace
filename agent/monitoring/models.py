@@ -107,3 +107,20 @@ class SystemStatus(models.Model):
 
     def __str__(self):
         return f"System last active: {self.updated_at}"
+
+
+class AgentDowntime(models.Model):
+    """records periods when the agent was offline."""
+    downtime_start = models.DateTimeField()
+    downtime_end = models.DateTimeField()
+    synced = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'agent_downtimes'
+        ordering = ['-downtime_start']
+
+    def __str__(self):
+        duration = (self.downtime_end -
+                    self.downtime_start).total_seconds() / 60
+        return f"Agent down: {self.downtime_start} ({duration:.0f} minutes)"

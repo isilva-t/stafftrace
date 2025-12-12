@@ -5,8 +5,9 @@ import { AuthService } from "./auth.service";
 import {
   EmployeeStatus,
   DailyPresence,
-  MonthlyPresence
+  MonthlyPresence,
 } from '../models/employee.model';
+import { AgentDowntime } from "../models/downtime.model";
 import { environment } from "../../environments/environment";
 
 @Injectable({
@@ -48,6 +49,13 @@ export class ApiService {
   getMonthlyReport(year: number, month: number): Observable<MonthlyPresence[]> {
     return this.http.get<MonthlyPresence[]>(
       `${this.apiUrl}/monthly?year=${year}&month=${month}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getDowntimes(date: string): Observable<AgentDowntime[]> {
+    return this.http.get<AgentDowntime[]>(
+      `${this.apiUrl}/downtimes?date=${date}`,
       { headers: this.getHeaders() }
     );
   }

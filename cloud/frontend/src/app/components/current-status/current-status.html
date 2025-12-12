@@ -5,6 +5,18 @@
         <button (click)="refresh()" [disabled]="loading">Refresh ↻</button>
     </div>
 </div>
+
+<div *ngIf="downtimes.length > 0" class="downtime-banner">
+    <span class="warning-icon">⚠️</span>
+    <div class="downtime-text">
+        <strong>Agent offline today:</strong>
+        <span *ngFor="let dt of downtimes; let last = last">
+            {{ formatDowntime(dt) }}<span *ngIf="!last">, </span>
+        </span>
+        <p class="downtime-note">Presence data may be incomplete during these periods.</p>
+    </div>
+</div>
+
 <div *ngIf="loading" class="loading">Loading...</div>
 <div *ngIf="error" class="error">{{ error }}</div>
 <div *ngIf="!loading && !error" class="employee-grid">

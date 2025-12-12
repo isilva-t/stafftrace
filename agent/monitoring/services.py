@@ -67,12 +67,13 @@ def send_heartbeat(devices_online):
         return False
 
 
-def send_hourly_summary(summaries):
+def send_hourly_summary(summaries, downtime_data=None):
     """
     Send hourly summary to cloud API.
 
     Args:
         summaries: List of dicts with hourly presence data
+        downtime_data: Optional list of dicts with agent downtime info
 
     Returns:
         bool: True if successful, False otherwise
@@ -82,6 +83,9 @@ def send_hourly_summary(summaries):
         'timestamp': timezone.now().isoformat(),
         'presenceData': summaries
     }
+
+    if downtime_data:
+        payload['agentDowntimes'] = downtime_data
 
     try:
         response = requests.post(

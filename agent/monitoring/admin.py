@@ -2,7 +2,7 @@
 Django Admin configuration for monitoring app.
 """
 from django.contrib import admin
-from .models import User, Device, StateChange, HourlySummary, SystemStatus
+from .models import User, Device, StateChange, HourlySummary, SystemStatus, AgentDowntime
 
 
 @admin.register(User)
@@ -59,3 +59,19 @@ class SystemStatusAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False  # Cannot delete system status
+
+
+@admin.register(AgentDowntime)
+class AgentDowntimeAdmin(admin.ModelAdmin):
+    list_display = ["downtime_start", "downtime_end",
+                    "duration_minutes", "synced", "created_at"]
+    readonly_fields = ['created_at']
+    ordering = ["-downtime_start"]
+
+    def duration_minutes(self, obj):
+        duration = (obj.downtime_end - obj.downtime_start).total_seconds() / 60
+        return f"{duration:.0f} min"
+    duration_minutes.short_description = "Duration"
+
+    def has_add_permission(self, request):
+        return False

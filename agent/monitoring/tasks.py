@@ -4,7 +4,7 @@ Celery periodic tasks for monitoring app.
 from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
-from .models import Device, StateChange, User, HourlySummary, SystemStatus
+from .models import Device, StateChange, User, HourlySummary, SystemStatus, AgentDowntime
 from .services import ping_device, send_heartbeat, send_hourly_summary
 from .constants import OFFLINE_THRESHOLD_SECONDS
 
@@ -165,11 +165,26 @@ def send_hourly_summary_to_cloud():
             summaries.append((payload, summary_obj))
 
     if summaries:
+
+        unsynced_downtimes = AgentDowntime.objects.filter(synced=False)
+        downtime_data = None
+
+        if unsynced_downtimes.exists():
+            downtime_data = [{
+                'downtimeStart': dt.downtime_start.isoformat(),
+                'downtimeEnd': dt.downtime_end.isoformat()
+            } for dt in unsynced_downtimes]
+
         for payload, summary_obj in summaries:
-            success = send_hourly_summary([payload])
+            success = send_hourly_summary(
+                [payload], downtime_data if downtime_data else None)
             if success:
                 summary_obj.synced = True
                 summary_obj.save()
+
+                if downtime_data:
+                    unsynced_downtimes.update(synced=True)
+                    downtime_data = None
 
 
 @shared_task

@@ -2,6 +2,8 @@ package com.presence.backend.controller;
 
 import com.presence.backend.model.CurrentStatus;
 import com.presence.backend.model.DailyPresence;
+import com.presence.backend.model.AgentDowntime;
+import com.presence.backend.repository.AgentDowntimeRepository;
 import com.presence.backend.model.dto.*;
 import com.presence.backend.repository.CurrentStatusRepository;
 import com.presence.backend.repository.DailyPresenceRepository;
@@ -34,16 +36,37 @@ public class PresenceController {
 	@Autowired
 	private NameMappingService nameMappingService;
 
+	@Autowired
+	private AgentDowntimeRepository agentDowntimeRepository;
+
 	@PostMapping("/presence")
 	public ResponseEntity<String> receivePresence(@RequestBody PresenceRequest request) {
-		
+
+		if (request.getAgentDowntimes() != null && !request.getAgentDowntimes().isEmpty()) {
+			for (PresenceRequest.AgentDowntimeData dtData : request.getAgentDowntimes()) {
+				AgentDowntime downtime = new AgentDowntime();
+
+				String startStr = dtData.getDowntimeStart()
+						.replace("Z", "")
+						.replaceAll("\\+00:00$", "");
+				String endStr = dtData.getDowntimeEnd()
+						.replace("Z", "")
+						.replaceAll("\\+00:00$", "");
+
+				downtime.setDowntimeStart(LocalDateTime.parse(startStr));
+				downtime.setDowntimeEnd(LocalDateTime.parse(endStr));
+				downtime.setCreatedAt(LocalDateTime.now());
+				agentDowntimeRepository.save(downtime);
+			}
+		}
+
 		for (PresenceRequest.PresenceData data : request.getPresenceData()) {
 			LocalDate date = LocalDate.parse(data.getDate());
 
-			//find or create daily presence record
+			// find or create daily presence record
 			DailyPresence daily = dailyPresenceRepository
-								.findByEmployeeIdAndDate(data.getEmployeeId(), date)
-								.orElse(new DailyPresence());
+					.findByEmployeeIdAndDate(data.getEmployeeId(), date)
+					.orElse(new DailyPresence());
 
 			boolean isNew = daily.getId() == null;
 
@@ -54,13 +77,13 @@ public class PresenceController {
 
 			LocalTime newFirstSeen = LocalTime.parse(data.getFirstSeen());
 			if (isNew || daily.getFirstSeen() == null
-				|| newFirstSeen.isBefore(daily.getFirstSeen())) {
+					|| newFirstSeen.isBefore(daily.getFirstSeen())) {
 				daily.setFirstSeen(newFirstSeen);
 			}
-			
+
 			LocalTime newLastSeen = LocalTime.parse(data.getLastSeen());
 			if (isNew || daily.getLastSeen() == null
-				|| newLastSeen.isAfter(daily.getLastSeen())) {
+					|| newLastSeen.isAfter(daily.getLastSeen())) {
 				daily.setLastSeen(newLastSeen);
 			}
 
@@ -82,7 +105,7 @@ public class PresenceController {
 	@GetMapping("/current")
 	public ResponseEntity<List<EmployeeStatusDTO>> getCurrentStatus(
 			@RequestHeader(value = "Authorization", required = false) String authHeader) {
-		
+
 		boolean isAuthenticated = false;
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			String token = authHeader.substring(7);
@@ -93,18 +116,16 @@ public class PresenceController {
 
 		boolean finalIsAuthenticated = isAuthenticated;
 		List<EmployeeStatusDTO> result = statuses.stream()
-					.map(status -> new EmployeeStatusDTO(
-							status.getEmployeeId(),
-							nameMappingService.getDisplayName(
+				.map(status -> new EmployeeStatusDTO(
+						status.getEmployeeId(),
+						nameMappingService.getDisplayName(
 								status.getEmployeeName(),
 								status.getFakeName(),
-								finalIsAuthenticated
-							),
-							status.getIsPresent(),
-							status.getCurrentArea(),
-							status.getLastSeen()
-						))
-						.collect(Collectors.toList());
+								finalIsAuthenticated),
+						status.getIsPresent(),
+						status.getCurrentArea(),
+						status.getLastSeen()))
+				.collect(Collectors.toList());
 
 		return ResponseEntity.ok(result);
 	}
@@ -113,7 +134,7 @@ public class PresenceController {
 	public ResponseEntity<List<DailyPresence>> getDailyReport(
 			@RequestParam String date,
 			@RequestHeader(value = "Authorization", required = false) String authHeader) {
-		
+
 		boolean isAuthenticated = false;
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			String token = authHeader.substring(7);
@@ -123,17 +144,28 @@ public class PresenceController {
 		LocalDate queryDate = LocalDate.parse(date);
 		List<DailyPresence> records = dailyPresenceRepository.findByDate(queryDate);
 
-		//apply name mapping
+		// apply name mapping
 		boolean finalIsAuthenticated = isAuthenticated;
 		records.forEach(record -> {
 			String displayName = nameMappingService.getDisplayName(
-				record.getEmployeeName(),
-				record.getFakeName(),
-				finalIsAuthenticated
-			);
+					record.getEmployeeName(),
+					record.getFakeName(),
+					finalIsAuthenticated);
 			record.setEmployeeName(displayName);
 		});
-		
+
 		return ResponseEntity.ok(records);
+	}
+
+	@GetMapping("/downtimes")
+	public ResponseEntity<List<AgentDowntime>> getDowntimes(@RequestParam String date) {
+
+		LocalDate queryDate = LocalDate.parse(date);
+		LocalDateTime startOfDay = queryDate.atStartOfDay();
+		LocalDateTime endOfDay = queryDate.plusDays(1).atStartOfDay();
+
+		List<AgentDowntime> downtimes = agentDowntimeRepository.findByDowntimeStartBetween(startOfDay, endOfDay);
+
+		return ResponseEntity.ok(downtimes);
 	}
 }
