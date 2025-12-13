@@ -33,3 +33,22 @@ export interface LoginResponse {
   token: string;
   message: string;
 }
+
+export interface DailyDetail {
+  date: string;
+  dayOfWeek: string;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  hours: number;
+  status: string;
+}
+
+export interface EmployeeMonthlyDetail {
+  employeeId: number;
+  employeeName: string;
+  year: number;
+  month: number;
+  dailyRecords: DailyDetail[];
+  totalHours: number;
+  daysPresent: number;
+}

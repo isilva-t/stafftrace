@@ -1,0 +1,46 @@
+<div class="view-header">
+    <div>
+        <button (click)="goBack()" class="back-button">← Back to Monthly</button>
+        <h2 *ngIf="detail">{{ detail.employeeName }} - {{ getMonthName() }}</h2>
+    </div>
+</div>
+<div *ngIf="loading" class="loading">Loading...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="!loading && !error && detail" class="detail-container">
+    <div class="summary-box">
+        <div class="summary-item">
+            <span class="summary-label">Total Hours:</span>
+            <span class="summary-value">{{ detail.totalHours.toFixed(1) }}h</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Days Present:</span>
+            <span class="summary-value">{{ detail.daysPresent }} days</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Average:</span>
+            <span class="summary-value">{{ (detail.totalHours / detail.daysPresent).toFixed(1) }}h/day</span>
+        </div>
+    </div>
+    <table class="calendar-table">
+        <thead>
+            <tr>
+                <th>Day</th>
+                <th>Arrived</th>
+                <th>Left</th>
+                <th>Hours</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- prettier-ignore-start -->
+        <tr *ngFor="let day of detail.dailyRecords" [ngClass]="getStatusClass(day.status)">
+            <td>{{ formatDayHeader(day.date, day.dayOfWeek) }}</td>
+            <td>{{ formatTime(day.firstSeen) }}</td>
+            <td>{{ formatTime(day.lastSeen) }}</td>
+            <td>{{ day.hours > 0 ? day.hours.toFixed(1) + 'h' : '-' }}</td>
+            <td><span class="status-badge">{{ day.status }}</span></td>
+        </tr>
+            <!-- prettier-ignore-end -->
+        </tbody>
+    </table>
+</div>

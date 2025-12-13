@@ -6,6 +6,7 @@ import {
   EmployeeStatus,
   DailyPresence,
   MonthlyPresence,
+  EmployeeMonthlyDetail,
 } from '../models/employee.model';
 import { AgentDowntime } from "../models/downtime.model";
 import { AgentHealth } from "../models/agent-health.model";
@@ -64,6 +65,17 @@ export class ApiService {
   getAgentHealth(): Observable<AgentHealth[]> {
     return this.http.get<AgentHealth[]>(
       `${this.apiUrl}/agent-health`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  getEmployeeMonthlyDetail(
+    employeeId: number,
+    year: number,
+    month: number
+  ): Observable<EmployeeMonthlyDetail> {
+    return this.http.get<EmployeeMonthlyDetail>(
+      `${this.apiUrl}/employee/${employeeId}/monthly?year=${year}&month=${month}`,
       { headers: this.getHeaders() }
     );
   }
