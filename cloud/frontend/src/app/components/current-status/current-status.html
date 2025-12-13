@@ -6,31 +6,37 @@
     </div>
 </div>
 
-<div class="agent-health-banner" [ngClass]="{
-  'status-healthy': agentStatus === 'HEALTHY',
-  'status-degraded': agentStatus === 'DEGRADED',
-  'status-offline': agentStatus === 'OFFLINE',
-  'status-unknown': agentStatus === 'UNKNOWN'
+<div class="agent-health-banner" *ngIf="agentHealthData.length > 0" [ngClass]="{
+  'banner-healthy': agentStatus === 'HEALTHY',
+  'banner-degraded': agentStatus === 'DEGRADED',
+  'banner-offline': agentStatus === 'OFFLINE',
+  'banner-unknown': agentStatus === 'UNKNOWN'
 }">
-  <div *ngIf="agentHealthData.length > 0">
-    <span class="status-icon">
-      {{ agentStatus === 'HEALTHY' ? '✅' :
-         agentStatus === 'DEGRADED' ? '⚠️' :
-         agentStatus === 'OFFLINE' ? '🔴' : '❓' }}
-    </span>
-    <span class="status-text">
-      Agent {{ agentHealthData[0].siteId }} - {{ agentStatus }}
-    </span>
-    <span class="status-time">
-      Last heartbeat: {{ agentLastSeen }}
-    </span>
+  <div class="banner-content">
+    <div class="banner-left">
+      <span class="status-icon">
+        {{ agentStatus === 'HEALTHY' ? '🟢' :
+           agentStatus === 'DEGRADED' ? '⚠️' :
+           agentStatus === 'OFFLINE' ? '🔴' : '❓' }}
+      </span>
+      <div class="status-info">
+        <span class="site-name">{{ agentHealthData[0].siteId }}</span>
+        <span class="status-label">{{ agentStatus }}</span>
+      </div>
+    </div>
+    <div class="banner-right">
+      <span class="heartbeat-label">Last heartbeat:</span>
+      <span class="heartbeat-time">{{ agentLastSeen }}</span>
+    </div>
   </div>
-  <div *ngIf="agentHealthData.length === 0">
+</div>
+
+<div class="agent-health-banner banner-unknown" *ngIf="agentHealthData.length === 0">
+  <div class="banner-content">
     <span class="status-icon">❓</span>
     <span class="status-text">No agent data available</span>
   </div>
 </div>
-
 
 <div *ngIf="downtimes.length > 0" class="downtime-banner">
     <span class="warning-icon">⚠️</span>
@@ -48,17 +54,17 @@
 <div *ngIf="error" class="error">{{ error }}</div>
 <div *ngIf="!loading && !error" class="employee-grid">
     <div *ngFor="let emp of employees" class="employee-card">
-        <div class="employee-header">
-            <span class
-                  None="emp.isPresent ? 'status-indicator status-online' : 'status-indicator status-offline'">
-                {{ emp.isPresent ? '🟢' : '🔴' }}
-            </span>
-            <h3>{{ emp.employeeName }}</h3>
-        </div>
-        <div class="employee-details">
-            <p *ngIf="emp.isPresent">Present since {{ formatTime(emp.lastSeen) }}</p>
-            <p *ngIf="!emp.isPresent">Last seen {{ formatTime(emp.lastSeen) }}</p>
-            <p class="area">Area: {{ emp.currentArea }}</p>
+        <div class="card-layout">
+            <div class="card-left">
+                <span [ngClass]="emp.isPresent ? 'status-indicator status-online' : 'status-indicator status-offline'">
+                    {{ emp.isPresent ? '🟢' : '🔴' }}
+                </span>
+                <h3>{{ emp.employeeName }}</h3>
+            </div>
+            <div class="card-right">
+                <p class="time">Last seen: {{ formatTime(emp.lastSeen) }}</p>
+                <p class="area">Area: {{ emp.currentArea }}</p>
+            </div>
         </div>
     </div>
 </div>

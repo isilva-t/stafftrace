@@ -8,9 +8,9 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
+    padding: 5px 0;
     border-bottom: 2px solid var(--color-border);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 header h1 {
