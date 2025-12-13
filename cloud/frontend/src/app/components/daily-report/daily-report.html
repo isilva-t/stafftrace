@@ -1,0 +1,44 @@
+<div class="view-header">
+  <h2>Daily Report</h2>
+
+</div>
+<div class="view-header">
+  <div class="date-controls">
+    <button (click)="previousDay()">◀</button>
+    <span class="selected-date">{{ formatDate(selectedDate) }}</span>
+    <button (click)="nextDay()">▶</button>
+    <button (click)="today()">Today</button>
+  </div>
+</div>
+
+<div class="loading" *ngIf="loading">Loading...</div>
+<div class="error" *ngIf="error">{{ error }}</div>
+
+<table *ngIf="!loading && !error">
+  <thead>
+    <tr>
+      <th>Employee</th>
+      <th>Arrived</th>
+      <th>Left</th>
+      <th>Hours</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let record of records">
+      <td>{{ record.employeeName }}</td>
+      <td>{{ formatTime(record.firstSeen) }}</td>
+      <td>{{ formatTime(record.lastSeen) }}</td>
+      <td>{{ record.hoursPresent.toFixed(1) }}h</td>
+      <td>
+        <span class="status-badge" [ngClass]="{
+          'status-full': getStatus(record.hoursPresent) === 'Full day',
+          'status-partial': getStatus(record.hoursPresent) === 'Partial',
+          'status-absent': getStatus(record.hoursPresent) === 'Absent'
+        }">
+          {{ getStatus(record.hoursPresent) }}
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
