@@ -36,25 +36,13 @@ public class HeartbeatController {
 			status.setEmployeeId(device.getEmployeeId());
 			status.setEmployeeName(device.getEmployeeName());
 			status.setFakeName(device.getFakeName());
-			status.setIsPresent(true);
+			status.setIsPresent(device.getIsPresent());
 			status.setCurrentArea(device.getArea());
 			status.setLastSeen(now);
 			status.setUpdatedAt(now);
 
 			currentStatusRepository.save(status);
 		}
-
-		// makr devices not in list as absent (if not seen in 10 minutes)
-		currentStatusRepository.findAll().forEach(status -> {
-			boolean inCurrentList = request.getDevicesOnline().stream()
-					.anyMatch(d -> d.getEmployeeId().equals(status.getEmployeeId()));
-
-			if (!inCurrentList) {
-				status.setIsPresent(false);
-				status.setUpdatedAt(now);
-				currentStatusRepository.save(status);
-			}
-		});
 
 		AgentHealth agentHealth = agentHealthRepository
 				.findBySiteId(request.getSiteId())

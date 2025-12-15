@@ -69,18 +69,18 @@ def ping_all_devices():
 @shared_task
 def send_heartbeat_to_cloud():
     """Send current online status to cloud."""
-    devices_online = []
+    all_employees = []
 
     for user in User.objects.all():
-        if user.is_online():
-            devices_online.append({
-                'employeeId': user.id,
-                'employeeName': user.employee_name,
-                'fakeName': user.fake_name,
-                'area': 'default'  # Hardcoded for MVP
-            })
+        all_employees.append({
+            'employeeId': user.id,
+            'employeeName': user.employee_name,
+            'fakeName': user.fake_name,
+            'area': 'default',  # Hardcoded for MVP
+            'isPresent': user.is_online()
+        })
 
-    send_heartbeat(devices_online)
+    send_heartbeat(all_employees)
 
 
 @shared_task
@@ -226,4 +226,5 @@ def retry_unsynced_summaries():
 def update_system_heartbeat():
     """Update system heartbeat to track app health."""
     system = SystemStatus.get_instance()
+    system.save()  # This updates updated_at automatically
     system.save()  # This updates updated_at automatically
