@@ -5,9 +5,10 @@
     --color-primary: #2563eb;
     --color-background: #ffffff;
     --color-text: #1f2937;
-    --color-border: #a5a7ab;
+    --color-border: #d5d7db;
     --color-hover: #f3f4f6;
     --color-header-bg: #f9fafb;
+    --color-link: #183f5e;
 }
 
 /* Reset */
