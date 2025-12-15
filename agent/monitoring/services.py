@@ -52,10 +52,15 @@ def send_heartbeat(devices_online):
         'devicesOnline': devices_online
     }
 
+    headers = {
+        'Authorization': f'Bearer {settings.AGENT_AUTH_TOKEN}'
+    }
+
     try:
         response = requests.post(
             f"{settings.CLOUD_API_URL}/api/heartbeat",
             json=payload,
+            headers=headers,
             timeout=10
         )
         response.raise_for_status()
@@ -84,6 +89,10 @@ def send_hourly_summary(summaries, downtime_data=None):
         'presenceData': summaries
     }
 
+    headers = {
+        'Authorization': f'Bearer {settings.AGENT_AUTH_TOKEN}'
+    }
+
     if downtime_data:
         payload['agentDowntimes'] = downtime_data
 
@@ -91,6 +100,7 @@ def send_hourly_summary(summaries, downtime_data=None):
         response = requests.post(
             f"{settings.CLOUD_API_URL}/api/presence",
             json=payload,
+            headers=headers,
             timeout=10
         )
         response.raise_for_status()

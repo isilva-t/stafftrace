@@ -15,6 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+AGENT_AUTH_TOKEN = os.getenv('AGENT_AUTH_TOKEN')
 
 # Application definition
 INSTALLED_APPS = [
