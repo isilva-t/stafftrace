@@ -21,7 +21,6 @@
       <th>Arrived</th>
       <th>Left</th>
       <th>Hours</th>
-      <th>Status</th>
     </tr>
   </thead>
   <tbody>
@@ -29,15 +28,12 @@
       <td>{{ record.employeeName }}</td>
       <td>{{ formatTime(record.firstSeen) }}</td>
       <td>{{ formatTime(record.lastSeen) }}</td>
-      <td>{{ record.hoursPresent.toFixed(1) }}h</td>
-      <td>
-        <span class="status-badge" [ngClass]="{
-          'status-full': getStatus(record.hoursPresent) === 'Full day',
-          'status-partial': getStatus(record.hoursPresent) === 'Partial',
-          'status-absent': getStatus(record.hoursPresent) === 'Absent'
-        }">
-          {{ getStatus(record.hoursPresent) }}
-        </span>
+      <td [ngClass]="{
+        'hours-full': getStatus(record.hoursPresent) === 'Full day',
+        'hours-partial': getStatus(record.hoursPresent) === 'Partial',
+        'hours-absent': getStatus(record.hoursPresent) === 'Absent'
+      }">
+        {{ record.hoursPresent.toFixed(1) }}h
       </td>
     </tr>
   </tbody>
