@@ -11,6 +11,19 @@ services:
     networks:
       - cloud-network
 
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+      ME_CONFIG_BASICAUTH: ${ME_CONFIG_BASICAUTH}
+    depends_on:
+      - mongodb
+    networks:
+      - cloud-network
+
   backend:
     build: ./backend
     container_name: cloud-backend
@@ -40,6 +53,8 @@ services:
       - backend
     networks:
       - cloud-network
+
+
 
 networks:
   cloud-network:
