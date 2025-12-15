@@ -38,7 +38,16 @@ public class HeartbeatController {
 			status.setFakeName(device.getFakeName());
 			status.setIsPresent(device.getIsPresent());
 			status.setCurrentArea(device.getArea());
-			status.setLastSeen(now);
+
+			if (device.getLastSeen() != null) {
+				LocalDateTime lastSeenTime = LocalDateTime.parse(
+						device.getLastSeen().replace("Z", "")
+								.replaceAll("\\+00:00$", ""));
+				status.setLastSeen(lastSeenTime);
+			} else {
+				status.setLastSeen(now);
+			}
+
 			status.setUpdatedAt(now);
 
 			currentStatusRepository.save(status);

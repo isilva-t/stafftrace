@@ -72,12 +72,15 @@ def send_heartbeat_to_cloud():
     all_employees = []
 
     for user in User.objects.all():
+        last_state = user.state_changes.first()
+
         all_employees.append({
             'employeeId': user.id,
             'employeeName': user.employee_name,
             'fakeName': user.fake_name,
             'area': 'default',  # Hardcoded for MVP
-            'isPresent': user.is_online()
+            'isPresent': user.is_online(),
+            'lastSeen': last_state.timestamp.isoformat() if last_state else None
         })
 
     send_heartbeat(all_employees)

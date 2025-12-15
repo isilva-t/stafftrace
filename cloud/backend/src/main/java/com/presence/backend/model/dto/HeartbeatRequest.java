@@ -16,5 +16,6 @@ public class HeartbeatRequest {
 		private String fakeName;
 		private String area;
 		private Boolean isPresent;
+		private String lastSeen;
 	}
 }
