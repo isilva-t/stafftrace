@@ -12,13 +12,9 @@
   'banner-offline': agentStatus === 'OFFLINE',
   'banner-unknown': agentStatus === 'UNKNOWN'
 }">
+  <div class="status-badge-agent">{{ agentStatus }}</div>
   <div class="banner-content">
     <div class="banner-left">
-      <span class="status-icon">
-        {{ agentStatus === 'HEALTHY' ? '🟢' :
-           agentStatus === 'DEGRADED' ? '⚠️' :
-           agentStatus === 'OFFLINE' ? '🔴' : '❓' }}
-      </span>
       <div class="status-info">
         <span class="site-name">{{ agentHealthData[0].siteId }}</span>
         <span class="status-label">{{ agentStatus }}</span>
@@ -50,18 +46,17 @@
 </div>
 
 
+<h3>Employee Status</h3>
 <div *ngIf="loading" class="loading">Loading...</div>
 <div *ngIf="error" class="error">{{ error }}</div>
 <div *ngIf="!loading && !error" class="employee-grid">
-    <div *ngFor="let emp of employees" class="employee-card">
+    <div *ngFor="let emp of employees" class="employee-card" [ngClass]="emp.isPresent ? 'online' : 'offline'">
+        <div class="status-badge">
+        {{ emp.isPresent ? 'ONLINE' : 'OFFLINE' }}
+        </div>
         <div class="card-layout">
-            <div class="card-left">
-                <span [ngClass]="emp.isPresent ? 'status-indicator status-online' : 'status-indicator status-offline'">
-                    {{ emp.isPresent ? '🟢' : '🔴' }}
-                </span>
-                <h3>{{ emp.employeeName }}</h3>
-            </div>
             <div class="card-right">
+                <p class="name">{{ emp.employeeName }}</p>
                 <p class="time">Activity: {{ formatTime(emp.lastSeen) }}</p>
                 <p class="area">Area: {{ emp.currentArea }}</p>
             </div>
