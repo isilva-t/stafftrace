@@ -48,6 +48,7 @@ services:
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:
+      - ./frontend/public:/app/public:ro
       - ./frontend/src:/app/src:ro
     depends_on:
       - backend

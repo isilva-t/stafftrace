@@ -14,9 +14,15 @@ header {
 }
 
 header h1 {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 600;
     margin: 0;
+}
+
+.site-logo {
+  height: 1.8em;
+  width: auto;
+  vertical-align: middle;
 }
 
 .auth-info {
@@ -55,3 +61,5 @@ nav a.active {
     color: white;
     border-color: var(--color-primary);
 }
+
+
