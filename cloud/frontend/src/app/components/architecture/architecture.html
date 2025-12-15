@@ -1,0 +1,59 @@
+<div class="architecture-container">
+    <!-- Architecture Diagram -->
+    <div class="diagram-section">
+        <h2>How StaffTrace Works:</h2>
+        <div class="architecture-diagram">
+            <!-- Browser/You Are Here -->
+            <div class="layer layer-browser">
+                <div class="layer-badge">YOU ARE HERE</div>
+                <div class="layer-content">
+                    <h3>🌐 Web Dashboard</h3>
+                    <p class="tech-label">Angular • TypeScript • HTTPS</p>
+                    <ul>
+                        <li>Access from anywhere with internet connection</li>
+                        <li>Real-time status updates every 15 seconds</li>
+                        <li>Historical reports (daily, monthly, per employee)</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Connection Arrow -->
+            <div class="connection-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-label">Secure HTTPS</div>
+                <div class="arrow-line"></div>
+            </div>
+            <!-- Cloud Backend -->
+            <div class="layer layer-cloud">
+                <div class="layer-badge">CLOUD</div>
+                <div class="layer-content">
+                    <h3>☁️ Cloud Backend</h3>
+                    <p class="tech-label">Spring Boot • MongoDB • Kubernetes (GKE)</p>
+                    <ul>
+                        <li>Professional cloud hosting (99.9% uptime)</li>
+                        <li>Secure data storage and processing</li>
+                        <li>Automatic backups and disaster recovery</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Connection Arrow -->
+            <div class="connection-arrow">
+                <div class="arrow-line"></div>
+                <div class="arrow-label">Agent sends data regularly to Cloud Backend</div>
+                <div class="arrow-line"></div>
+            </div>
+            <!-- Office Agent -->
+            <div class="layer layer-office">
+                <div class="layer-badge">ON-PREMISE</div>
+                <div class="layer-content">
+                    <h3>🏢 Office Monitoring System</h3>
+                    <p class="tech-label">Django • PostgreSQL • Celery</p>
+                    <ul>
+                        <li>Monitors employee devices on office network (smartphones, computers)</li>
+                        <li>Works even if internet is temporarily down</li>
+                        <li>Sends updates to cloud periodically</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
