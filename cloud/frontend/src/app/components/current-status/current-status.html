@@ -1,7 +1,7 @@
 <div class="view-header">
     <h2>Current Status</h2>
     <div class="view-actions">
-        <span class="timestamp">{{ lastUpdated | date:'short' }}</span>
+        <span class="timestamp">{{ lastUpdated | date:'MM/dd/yyyy, HH:mm' }}</span>
         <button (click)="refresh()" [disabled]="loading">Refresh ↻</button>
     </div>
 </div>
