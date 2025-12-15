@@ -82,9 +82,25 @@ export class CurrentStatus implements OnInit, OnDestroy {
   }
 
   formatTime(isoString: string): string {
-    return new Date(isoString).toLocaleTimeString(environment.locale, {
+    const date = new Date(isoString);
+    const today = new Date();
+
+    const isToday = date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+
+    if (isToday) {
+      return `Today, ${new Date(isoString).toLocaleTimeString(environment.locale, {
+        hour: '2-digit',
+        minute: '2-digit'
+      })}`;
+    }
+    return date.toLocaleDateString(environment.locale, {
+      day: '2-digit',
+      month: 'short',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: false
     });
   }
 
