@@ -16,15 +16,17 @@ class User(models.Model):
         return self.employee_name
 
     def is_online(self):
-        """Check if user is currently online based on last state change."""
-        last_change = self.state_changes.order_by('-timestamp').first()
-        return last_change and last_change.status == 1
+        """User is online if ANY device is online."""
+        for device in self.devices.all():
+            last_change = self.state_changes.order_by('-timestamp').first()
+            if last_change and last_change.status == 1:
+                return True
+        return False
 
     def last_seen(self):
         """Get timestamp when user was last seen online."""
-        last_online = self.state_changes.filter(
-            status=1).order_by('-timestamp').first()
-        return last_online.timestamp if last_online else None
+        last_change = self.state_changes.order_by('-timestamp').first()
+        return last_change.timestamp if last_change else None
 
 
 class Device(models.Model):
