@@ -27,7 +27,7 @@ def ping_device(ip_address, timeout=1):
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=timeout + 1
+            timeout=timeout + 2
         )
         return result.returncode == 0
     except subprocess.TimeoutExpired:
