@@ -30,12 +30,9 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-      - "8000:8000"
     volumes:
       - .:/app
-    networks:
-      - st-agent
+    network_mode: host
 
 networks:
   st-agent:

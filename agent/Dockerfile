@@ -4,11 +4,12 @@ WORKDIR /app
 
 # Install system dependencies for PostgreSQL, ping, and networking
 RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    iputils-ping \
-    gcc \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+	postgresql-client \
+	iputils-ping \
+	gcc \
+	python3-dev \
+	arping \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .

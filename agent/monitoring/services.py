@@ -10,16 +10,17 @@ from django.utils import timezone
 
 def ping_device(ip_address, timeout=1):
     """
-    Ping a device and return success/failure.
+    Ping a device using ARP and return success/failure.
 
     Args:
         ip_address: IP address to ping
         timeout: Timeout in seconds
 
     Returns:
-        bool: True if ping successful, False otherwise
+        bool: True if device responded, False otherwise
     """
-    command = ['ping', '-c', '1', '-W', str(timeout), ip_address]
+    # command = ['ping', '-c', '1', '-W', str(timeout), ip_address]
+    command = ['arping', '-c', '1', '-w', str(timeout), ip_address]
 
     try:
         result = subprocess.run(
