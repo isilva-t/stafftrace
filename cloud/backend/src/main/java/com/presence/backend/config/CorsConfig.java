@@ -10,15 +10,14 @@ import java.util.Arrays;
 
 @Configuration
 public class CorsConfig {
-	
+
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(Arrays.asList(
-			"http://localhost:4200",
-			"https://stafftrace.xyz"
-		));
+				"http://localhost:4200",
+				"https://stafftrace.xyz"));
 		config.setAllowedHeaders(Arrays.asList("*"));
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
