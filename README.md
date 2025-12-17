@@ -97,39 +97,6 @@ Agent initiates all communication (outbound HTTPS only):
 
 ---
 
-## Tech Stack
-
-### On-Premise Agent
-| Component | Technology |
-|-----------|-----------|
-| Language | Python |
-| Framework | Django |
-| Database | PostgreSQL |
-| Task Scheduler | Celery + Redis |
-| Admin Interface | Django Admin |
-
-### Cloud Services
-| Component | Technology |
-|-----------|-----------|
-| Backend Language | Java |
-| Backend Framework | Spring Boot |
-| Database | MongoDB Atlas |
-| Frontend | Angular |
-| Authentication | JWT |
-| Web Server | Nginx |
-
-### Infrastructure
-| Component | Technology |
-|-----------|-----------|
-| Cloud Platform | Google Cloud Platform |
-| Orchestration | Kubernetes (GKE) |
-| Containerization | Docker |
-| IaC | Terraform |
-| CI/CD | GitHub Actions |
-| DNS/SSL | Cloudflare |
-
----
-
 ## Key Features
 
 - **Real-time Monitoring**: Live view of who's present on-site
@@ -181,10 +148,9 @@ Agent initiates all communication (outbound HTTPS only):
   - Logic: ANY device online = employee present
 - Area-based tracking via WiFi access point integration: Planned
 - Multi-site deployments: ✅ Ready (siteId field implemented)
-- Horizontal scaling via Kubernetes: ✅ Configured
 
 **Performance Optimizations:**
-- State-based storage (not ping-based): 240x reduction in data volume
+- State-based storage (not ping/arping-based): 240x reduction in data volume
 - Only state changes are recorded (online→offline transitions)
 - Indexed MongoDB queries for fast aggregation
 - Agent data retained locally for compliance and independence
