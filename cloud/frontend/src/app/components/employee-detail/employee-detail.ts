@@ -43,7 +43,7 @@ export class EmployeeDetail implements OnInit {
     this.loading = true;
     this.apiService.getEmployeeMonthlyDetail(this.employeeId, this.year, this.month).subscribe({
       next: (data) => {
-        const firstActiveIndex = data.dailyRecords.findIndex(day => day.hours > 0);
+        const firstActiveIndex = data.dailyRecords.findIndex(day => day.firstSeen !== null);
         let lastActiveIndex = -1;
         for (let i = data.dailyRecords.length - 1; i >= 0; i--) {
           if (data.dailyRecords[i].hours > 0) {
@@ -53,7 +53,7 @@ export class EmployeeDetail implements OnInit {
         }
 
         if (firstActiveIndex !== -1 && lastActiveIndex !== -1) {
-          data.dailyRecords = data.dailyRecords.slice(firstActiveIndex, lastActiveIndex);
+          data.dailyRecords = data.dailyRecords.slice(firstActiveIndex, lastActiveIndex + 1);
         }
 
         this.detail = data;
