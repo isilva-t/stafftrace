@@ -4,7 +4,9 @@ Configuration constants for the monitoring app.
 import os
 
 # Ping configuration
-PING_INTERVAL_SECONDS = 4              # Ping devices frequency
+
+# Ping devices frequency
+PING_INTERVAL_SECONDS = int(os.getenv('PING_INTERVAL_SECONDS', 120))
 OFFLINE_THRESHOLD_SECONDS = 15          # Mark offline after X seconds
 
 PING_LOCK_TIMEOUT_SECONDS = int(os.getenv('PING_LOCK_TIMEOUT_SECONDS', 60))
