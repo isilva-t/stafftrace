@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Device, StateChange, User, HourlySummary, SystemStatus, AgentDowntime
 from .services import ping_device, send_heartbeat, send_hourly_summary
-from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS
+from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS, OFFLINE_FAILURE_COUNT
 from django.core.cache import cache
 import time
 
@@ -57,13 +57,12 @@ def ping_all_devices():
                 # Ping failed
                 if device.id not in device_failure_tracker:
                     # First failure - start tracking
-                    device_failure_tracker[device.id] = timezone.now()
+                    device_failure_tracker[device.id] = 1
                 else:
                     # Check if threshold reached
-                    time_failing = (
-                        timezone.now() - device_failure_tracker[device.id]).total_seconds()
+                    device_failure_tracker[device.id] += 1
 
-                    if time_failing >= OFFLINE_THRESHOLD_SECONDS:
+                    if device_failure_tracker[device.id] >= OFFLINE_FAILURE_COUNT:
                         # Mark offline (only if was online)
                         if last_change and last_change.status == 1:
                             StateChange.objects.create(
