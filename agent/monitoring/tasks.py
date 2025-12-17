@@ -52,7 +52,7 @@ def ping_all_devices():
                         status=1  # went online
                     )
                     changes += 1
-                    print(f"{device.user.employee_name} came ONLINE")
+                    print(f"{device.user.employee_name} came ONLINE 🟢")
             else:
                 # Ping failed
                 if device.id not in device_failure_tracker:
@@ -73,7 +73,7 @@ def ping_all_devices():
                                 status=0  # went offline
                             )
                             changes += 1
-                            print(f"{device.user.employee_name} went OFFLINE")
+                            print(f"{device.user.employee_name} went OFFLINE 🔴")
                         # Clear tracker
                         device_failure_tracker.pop(device.id, None)
         if changes > 0:

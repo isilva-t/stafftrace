@@ -78,8 +78,8 @@ def send_heartbeat(devices_online):
             timeout=10
         )
         response.raise_for_status()
-        print(f"Heartbeat sent successfully:", end=" ")
-        print(f"{len(devices_online)} devices online")
+        print(
+            f"Heartbeat sent successfully with {len(devices_online)} devices")
         return True
     except requests.RequestException as e:
         print(f"Error sending heartbeat: {e}")
