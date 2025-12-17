@@ -18,42 +18,42 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        ON-PREMISE NETWORK                        │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────┐  │
+│                        ON-PREMISE NETWORK                       │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐  │
 │  │                    Django Agent                           │  │
 │  │  • Monitors device presence (network ping)                │  │
 │  │  • Tracks multiple devices per employee                   │  │
 │  │  • Stores locally in PostgreSQL                           │  │
 │  │  • Celery periodic tasks                                  │  │
-│  └───────────────────┬──────────────────────────────────────┘  │
-│                      │                                           │
-│                      │ HTTPS (Push Model)                        │
-│                      │ • Heartbeats (5 min)                      │
-│                      │ • Hourly summaries                        │
-└──────────────────────┼───────────────────────────────────────────┘
+│  └───────────────────┬───────────────────────────────────────┘  │
+│                      │                                          │
+│                      │ HTTPS (Push Model)                       │
+│                      │ • Heartbeats (5 min)                     │
+│                      │ • Hourly summaries                       │
+└──────────────────────┼──────────────────────────────────────────┘
                        │
                        ▼
          ┌─────────────────────────────┐
-         │    GOOGLE CLOUD PLATFORM     │
-         │                              │
+         │    GOOGLE CLOUD PLATFORM    │
+         │                             │
          │  ┌────────────────────────┐ │
          │  │  Spring Boot Backend   │ │
          │  │  • REST API            │ │
          │  │  • JWT Authentication  │ │
          │  │  • MongoDB Atlas       │ │
          │  └──────────┬─────────────┘ │
-         │             │                │
-         │             │ HTTP/JSON      │
-         │             ▼                │
+         │             │               │
+         │             │ HTTP/JSON     │
+         │             ▼               │
          │  ┌────────────────────────┐ │
          │  │  Angular Frontend      │ │
          │  │  • Real-time dashboard │ │
          │  │  • Reports & analytics │ │
          │  │  • Nginx web server    │ │
          │  └────────────────────────┘ │
-         │                              │
-         └──────────────────────────────┘
+         │                             │
+         └─────────────────────────────┘
                        │
                        │ HTTPS
                        ▼
@@ -63,16 +63,16 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 ### Three-Component Microservices Design
 
 **On-Premise Agent (Django)**
-- Monitors device presence via network pings
+- Monitors device presence via network connections (arping)
 - Handles multiple devices per employee (smartphones with 2.4GHz and 5GHz WiFi)
 - Logic: One device online = employee present; All devices offline = employee absent
 - Stores complete state history locally in PostgreSQL
-- Pushes heartbeats and summaries to cloud via HTTPS
+- Pushes heartbeats and summaries to cloud via HTTPS API
 
 **Cloud Backend (Spring Boot)**
 - Receives agent data through REST endpoints
 - Aggregates presence records in MongoDB Atlas
-- Provides authenticated API with JWT
+- Provides authenticated API with JWT for real employee names
 - Returns real or anonymized employee names based on auth
 
 **Cloud Frontend (Angular)**
@@ -85,7 +85,7 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 Agent initiates all communication (outbound HTTPS only):
 - **Heartbeat** (every 5 minutes): List of currently online devices
-- **Hourly Summary**: Detailed presence data with first_seen, last_seen, minutes_online
+- **Hourly Summary**: Detailed presence data with Arrived, Left, and Hours
 
 **Security Benefits:** 
 - No inbound traffic to local network
@@ -100,19 +100,19 @@ Agent initiates all communication (outbound HTTPS only):
 ### On-Premise Agent
 | Component | Technology |
 |-----------|-----------|
-| Language | Python 3.11 |
-| Framework | Django 5.0 |
-| Database | PostgreSQL 15 |
+| Language | Python |
+| Framework | Django |
+| Database | PostgreSQL |
 | Task Scheduler | Celery + Redis |
 | Admin Interface | Django Admin |
 
 ### Cloud Services
 | Component | Technology |
 |-----------|-----------|
-| Backend Language | Java 17 |
-| Backend Framework | Spring Boot 3.2 |
+| Backend Language | Java |
+| Backend Framework | Spring Boot |
 | Database | MongoDB Atlas |
-| Frontend | Angular 21 |
+| Frontend | Angular |
 | Authentication | JWT |
 | Web Server | Nginx |
 
