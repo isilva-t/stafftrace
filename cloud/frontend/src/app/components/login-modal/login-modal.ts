@@ -18,12 +18,14 @@ export class LoginModal {
   password = '';
   error = '';
   loading = false;
+  isLockedOut = false;
 
   constructor(private authService: AuthService) { }
 
   login(): void {
     this.loading = true;
     this.error = '';
+    this.isLockedOut = false;
 
     this.authService.login(this.username, this.password).subscribe({
       next: () => {
@@ -32,9 +34,14 @@ export class LoginModal {
         this.closeModal.emit();
       },
       error: (err) => {
-        this.error = 'Invalid credentials';
-        this.loading = false;
-        console.error(err);
+        if (err.status === 429) {
+          this.error = err.error;
+          this.isLockedOut = true;
+        } else {
+          this.error = 'Invalid credentials';
+          this.loading = false;
+          console.error(err);
+        }
       }
     });
   }

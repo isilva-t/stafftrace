@@ -4,17 +4,32 @@
         <form (ngSubmit)="login()">
             <div class="form-group">
                 <label>Username:</label>
-                <input type="text" [(ngModel)]="username" name="username" required autofocus />
+                <input
+                    type="text"
+                    [(ngModel)]="username"
+                    name="username"
+                    [disabled]="isLockedOut"
+                    required
+                    autofocus
+                />
             </div>
             <div class="form-group">
                 <label>Password:</label>
-                <input type="password" [(ngModel)]="password" name="password" required />
+                <input
+                    type="password"
+                    [(ngModel)]="password"
+                    name="password"
+                    [disabled]="isLockedOut"
+                    required
+                />
             </div>
-            <div class="error" *ngIf="error">{{ error }}</div>
+            <div *ngIf="error" [ngClass]="isLockedOut ? 'error-lockout' : 'error'">
+                <span *ngIf="isLockedOut">🔒 </span>{{ error }}
+            </div>
             <div class="form-actions">
                 <button type="submit"
                         class="primary"
-                        [disabled]="loading || !username || !password">
+                        [disabled]="loading || !username || !password || isLockedOut">
                     {{ loading ? 'Logging in...' : 'Login' }}
                 </button>
                 <button type="button" (click)="cancel()">Cancel</button>

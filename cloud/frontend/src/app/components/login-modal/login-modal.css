@@ -70,3 +70,14 @@
   border-radius: 4px;
   font-size: 14px;
 }
+
+.error-lockout {
+  color: #991b1b;
+  padding: 12px;
+  border: 2px solid #dc2626;
+  background: #fecaca;
+  margin: 16px 0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
