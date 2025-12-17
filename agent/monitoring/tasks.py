@@ -19,12 +19,12 @@ def ping_all_devices():
 
     changes = 0
     for device in Device.objects.select_related('user').all():
-        ping_success = ping_device(device.ip_address)
+        is_online, detected_mac = ping_device(device.ip_address)
 
         # Get last state change for this device
         last_change = device.state_changes.first()
 
-        if ping_success:
+        if is_online:
             # Clear failure tracker
             device_failure_tracker.pop(device.id, None)
 

@@ -20,21 +20,34 @@ def ping_device(ip_address, timeout=1):
         bool: True if device responded, False otherwise
     """
     # command = ['ping', '-c', '1', '-W', str(timeout), ip_address]
-    command = ['arping', '-c', '1', '-w', str(timeout), ip_address]
+
+    interface = settings.NETWORK_INTERFACE
+    command = ['arping', '-c', '1', '-I',
+               interface, '-w', str(timeout), ip_address]
 
     try:
         result = subprocess.run(
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=timeout + 2
+            timeout=timeout + 2,
+            text=True
         )
+        if result.returncode != 0:
+            return (False, None)
+        import re
+        mac_match = re.search(r'from ([0-9a-f:]{17})', result.stdout)
+        detected_mac = get_normal_mac(mac_match.group(1))
+        if detected_mac:
+            return (True, detected_mac)
+        return (True, None)
+
         return result.returncode == 0
     except subprocess.TimeoutExpired:
-        return False
+        return (False, None)
     except Exception as e:
         print(f"Error pinging {ip_address}: {e}")
-        return False
+        return (False, None)
 
 
 def send_heartbeat(devices_online):
@@ -110,3 +123,22 @@ def send_hourly_summary(summaries, downtime_data=None):
     except requests.RequestException as e:
         print(f"Error sending hourly summary: {e}")
         return False
+
+
+def get_normal_mac(mac):
+    """
+    Convert MAC adress with "-" to standard format
+    Input formats supported:
+        d0:ba:e4:ef:4d:c4
+        D0-BA-E4-EF-4D-C4
+    Returns: d0:ba:e4:ef:4d:c4 (lowercase, colon-separated)
+    """
+    if not mac:
+        return None
+
+    mac_str = str(mac)
+    mac_converted = mac_str.replace('-', ':').lower()
+    if len(mac_converted) != 17:
+        return None
+
+    return mac_converted

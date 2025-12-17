@@ -25,6 +25,8 @@ services:
   django-agent:
     build: .
     container_name: django-agent
+    cap_add:
+      - NET_RAW
     env_file:
       - .env
     depends_on:

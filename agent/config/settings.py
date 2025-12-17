@@ -16,6 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 AGENT_AUTH_TOKEN = os.getenv('AGENT_AUTH_TOKEN')
+NETWORK_INTERFACE = os.getenv('NETWORK_INTERFACE')
 
 # Application definition
 INSTALLED_APPS = [
