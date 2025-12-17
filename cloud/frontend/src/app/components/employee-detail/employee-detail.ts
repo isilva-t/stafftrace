@@ -46,7 +46,7 @@ export class EmployeeDetail implements OnInit {
         const firstActiveIndex = data.dailyRecords.findIndex(day => day.firstSeen !== null);
         let lastActiveIndex = -1;
         for (let i = data.dailyRecords.length - 1; i >= 0; i--) {
-          if (data.dailyRecords[i].hours > 0) {
+          if (data.dailyRecords[i].firstSeen !== null) {
             lastActiveIndex = i;
             break;
           }
