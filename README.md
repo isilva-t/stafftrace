@@ -1,7 +1,5 @@
 # StaffTrace
 
----
-
 ## What It Does
 
 Employee presence monitoring system that tracks attendance via network connection state.
