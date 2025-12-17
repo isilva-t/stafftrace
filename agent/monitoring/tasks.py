@@ -54,6 +54,9 @@ def ping_all_devices():
                     changes += 1
                     print(f"{device.user.employee_name} came ONLINE 🟢")
             else:
+                if last_change and last_change.status == 1:
+                    print('🟡 ping failed ', end="")
+                    print({device.user.employee_name})
                 # Ping failed
                 if device.id not in device_failure_tracker:
                     # First failure - start tracking

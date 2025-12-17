@@ -20,4 +20,4 @@ SUMMARY_INTERVAL_HOURS = 1              # Send hourly summary every hour
 SYSTEM_HEARTBEAT_CHECK_SECONDS = 20
 
 # only mark a device offline, only after seeing X times offline
-OFFLINE_FAILURE_COUNT = 2
+OFFLINE_FAILURE_COUNT = 3
