@@ -14,6 +14,19 @@ import time
 user_failure_tracker = {}
 
 
+def save_status(device, new_status):
+    StateChange.objects.create(
+        device=device,
+        user=device.user,
+        timestamp=timezone.now(),
+        status=new_status
+    )
+    if new_status == 1:
+        print(f"{device.user.fake_name} came ONLINE 🟢")
+    else:
+        print(f"{device.user.fake_name} went OFFLINE 🔴")
+
+
 @shared_task
 def ping_all_devices():
     """Ping all active devices and update state changes.
@@ -34,7 +47,6 @@ def ping_all_devices():
         changes = 0
 
         for user in User.objects.prefetch_related('devices', 'state_changes').all():
-
             any_device_online = False
             online_device = None
 
@@ -46,49 +58,29 @@ def ping_all_devices():
                     online_device = device
                     break
 
-            # Get last state change for this device
             last_change = device.state_changes.first()
 
             if any_device_online:
-                # Clear failure tracker
                 user_failure_tracker.pop(user.id, None)
 
-                # Check if device was offline
                 if not last_change or last_change.status == 0:
-                    # Device came online
-                    StateChange.objects.create(
-                        device=device,
-                        user=device.user,
-                        timestamp=timezone.now(),
-                        status=1  # went online
-                    )
+                    save_status(device, 1)
                     changes += 1
-                    print(f"{user.fake_name} came ONLINE 🟢")
-            else:
+
+            else:  # arp failed
                 if last_change and last_change.status == 1:
-                    # Ping failed
-                    print(f"🟡all ds failed for {user.fake_name}")
+                    print(f"All devices failed for {user.fake_name}. 🟡")
                 if user.id not in user_failure_tracker:
-                    # First failure - start tracking
                     user_failure_tracker[user.id] = 1
                 else:
-                    # Check if threshold reached
                     user_failure_tracker[user.id] += 1
 
                     if user_failure_tracker[user.id] >= OFFLINE_FAILURE_COUNT:
-                        # Mark offline (only if was online)
                         if last_change and last_change.status == 1:
-                            StateChange.objects.create(
-                                device=device,
-                                user=device.user,
-                                timestamp=timezone.now(),
-                                status=0  # went offline
-                            )
+                            save_status(device, 0)
                             changes += 1
-                            print(
-                                f"{user.fake_name} went OFFLINE 🔴")
-                        # Clear tracker
                         user_failure_tracker.pop(user.id, None)
+
         if changes > 0:
             send_heartbeat_to_cloud()
         duration = time.time() - start_time
