@@ -18,7 +18,7 @@
         </div>
         <div class="summary-item">
             <span class="summary-label">Average:</span>
-            <span class="summary-value">{{ (detail.totalHours / detail.daysPresent).toFixed(1) }}h/day</span>
+            <span class="summary-value">{{ detail.daysPresent > 0 ? (detail.totalHours / detail.daysPresent).toFixed(1) : '0.0' }}h/day</span>
         </div>
     </div>
     <table class="calendar-table">
