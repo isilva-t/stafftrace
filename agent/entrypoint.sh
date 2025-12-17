@@ -14,10 +14,10 @@ echo "Checking for power outage..."
 python manage.py check_outage || true
 
 echo "Starting Celery worker in background..."
-celery -A config worker -l info &
+celery -A config worker -l warning &
 
 echo "Starting Celery beat in background..."
-celery -A config beat -l info &
+celery -A config beat -l warning &
 
 echo "Starting Django development server..."
 python manage.py runserver 0.0.0.0:8000 --verbosity 2

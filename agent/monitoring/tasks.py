@@ -63,11 +63,11 @@ def ping_all_devices():
                         status=1  # went online
                     )
                     changes += 1
-                    print(f"{user.employee_name} came ONLINE 🟢")
+                    print(f"{user.fake_name} came ONLINE 🟢")
             else:
                 if last_change and last_change.status == 1:
                     # Ping failed
-                    print(f"🟡all ds failed for {user.employee_name}")
+                    print(f"🟡all ds failed for {user.fake_name}")
                 if user.id not in user_failure_tracker:
                     # First failure - start tracking
                     user_failure_tracker[user.id] = 1
@@ -86,7 +86,7 @@ def ping_all_devices():
                             )
                             changes += 1
                             print(
-                                f"{user.employee_name} went OFFLINE 🔴")
+                                f"{user.fake_name} went OFFLINE 🔴")
                         # Clear tracker
                         user_failure_tracker.pop(user.id, None)
         if changes > 0:
@@ -96,7 +96,7 @@ def ping_all_devices():
             f"✅ Scan complete - {changes} changes detected in {duration:.2f}s")
     finally:
         cache.delete(LOCK_KEY)
-        print("🔓 Lock released")
+        print("🏁 Lock released")
 
 
 @shared_task
@@ -109,14 +109,16 @@ def send_heartbeat_to_cloud():
 
         all_employees.append({
             'employeeId': user.id,
-            'employeeName': user.employee_name,
+            'employeeName': user.fake_name,
             'fakeName': user.fake_name,
             'area': 'default',  # Hardcoded for MVP
             'isPresent': user.is_online(),
             'lastSeen': last_state.timestamp.isoformat() if last_state else None
         })
 
-    send_heartbeat(all_employees)
+    if send_heartbeat(all_employees):
+        online_count = sum(1 for emp in all_employees if emp['isPresent'])
+        print(f"💓 Heartbeat: {online_count}/{len(all_employees)} online")
 
 
 @shared_task
@@ -189,7 +191,7 @@ def send_hourly_summary_to_cloud():
             # Prepare for cloud
             payload = {
                 'employeeId': user.id,
-                'employeeName': user.employee_name,
+                'employeeName': user.fake_name,
                 'fakeName': user.fake_name,
                 'date': start_time.date().isoformat(),
                 'hour': start_time.hour,
@@ -238,7 +240,7 @@ def retry_unsynced_summaries():
     for summary in unsynced:
         payload = {
             'employeeId': summary.user.id,
-            'employeeName': summary.user.employee_name,
+            'employeeName': summary.user.fake_name,
             'fakeName': summary.user.fake_name,
             'date': summary.hour.date().isoformat(),
             'hour': summary.hour.hour,
@@ -252,16 +254,14 @@ def retry_unsynced_summaries():
             summary.synced = True
             summary.save()
             print(f"✓ Synced summary for", end=" ")
-            print(f"{summary.user.employee_name} at {summary.hour}")
+            print(f"{summary.user.fake_name} at {summary.hour}")
         else:
             print(f"✗ Failed to sync summary for", end=" ")
-            print(f"{summary.user.employee_name} at {summary.hour}")
+            print(f"{summary.user.fake_name} at {summary.hour}")
 
 
 @shared_task
 def update_system_heartbeat():
     """Update system heartbeat to track app health."""
     system = SystemStatus.get_instance()
-    system.save()  # This updates updated_at automatically
-    system.save()  # This updates updated_at automatically
     system.save()  # This updates updated_at automatically

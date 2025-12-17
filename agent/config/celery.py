@@ -40,3 +40,7 @@ app.conf.beat_schedule = {
                 'schedule': 900.0,  # 900s = 15 minutes
     },
 }
+
+# Simplify log format - remove worker names and log levels
+app.conf.worker_log_format = '%(asctime)s: %(message)s'
+app.conf.worker_task_log_format = '%(asctime)s: %(message)s'
