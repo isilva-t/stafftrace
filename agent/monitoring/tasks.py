@@ -38,11 +38,11 @@ def ping_all_devices():
     lock_acquired = cache.add(LOCK_KEY, "locked", timeout=LOCK_TIMEOUT)
 
     if not lock_acquired:
-        print("⏭️  Skipping ping scan - previous scan still running")
+        # print("⏭️  Skipping ping scan - previous scan still running")
         return
 
     start_time = time.time()
-    print("🔒 Lock acquired - starting device scan")
+    # print("🔒 Lock acquired - starting device scan")
     try:
         changes = 0
 
@@ -88,7 +88,7 @@ def ping_all_devices():
             f"✅ Scan complete - {changes} changes detected in {duration:.2f}s")
     finally:
         cache.delete(LOCK_KEY)
-        print("🏁 Lock released")
+        # print("🏁 Lock released")
 
 
 @shared_task
