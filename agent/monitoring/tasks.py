@@ -10,8 +10,8 @@ from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS, OFF
 from django.core.cache import cache
 import time
 
-# In-memory tracker for failed pings
-device_failure_tracker = {}
+# In-memory tracker for failed pings to user devices
+user_failure_tracker = {}
 
 
 @shared_task
@@ -32,15 +32,26 @@ def ping_all_devices():
     print("🔒 Lock acquired - starting device scan")
     try:
         changes = 0
-        for device in Device.objects.select_related('user').all():
-            is_online, detected_mac = ping_device(device.ip_address)
+
+        for user in User.objects.prefetch_related('devices', 'state_changes').all():
+
+            any_device_online = False
+            online_device = None
+
+            for device in user.devices.all():
+                is_online, detected_mac = ping_device(device.ip_address)
+
+                if is_online:
+                    any_device_online = True
+                    online_device = device
+                    break
 
             # Get last state change for this device
             last_change = device.state_changes.first()
 
-            if is_online:
+            if any_device_online:
                 # Clear failure tracker
-                device_failure_tracker.pop(device.id, None)
+                user_failure_tracker.pop(user.id, None)
 
                 # Check if device was offline
                 if not last_change or last_change.status == 0:
@@ -52,19 +63,19 @@ def ping_all_devices():
                         status=1  # went online
                     )
                     changes += 1
-                    print(f"{device.user.employee_name} came ONLINE 🟢")
+                    print(f"{user.employee_name} came ONLINE 🟢")
             else:
                 if last_change and last_change.status == 1:
-                    print(f'🟡 ping failed {device.user.employee_name}')
-                # Ping failed
-                if device.id not in device_failure_tracker:
+                    # Ping failed
+                    print(f"🟡all ds failed for {user.employee_name}")
+                if user.id not in user_failure_tracker:
                     # First failure - start tracking
-                    device_failure_tracker[device.id] = 1
+                    user_failure_tracker[user.id] = 1
                 else:
                     # Check if threshold reached
-                    device_failure_tracker[device.id] += 1
+                    user_failure_tracker[user.id] += 1
 
-                    if device_failure_tracker[device.id] >= OFFLINE_FAILURE_COUNT:
+                    if user_failure_tracker[user.id] >= OFFLINE_FAILURE_COUNT:
                         # Mark offline (only if was online)
                         if last_change and last_change.status == 1:
                             StateChange.objects.create(
@@ -74,9 +85,10 @@ def ping_all_devices():
                                 status=0  # went offline
                             )
                             changes += 1
-                            print(f"{device.user.employee_name} went OFFLINE 🔴")
+                            print(
+                                f"{user.employee_name} went OFFLINE 🔴")
                         # Clear tracker
-                        device_failure_tracker.pop(device.id, None)
+                        user_failure_tracker.pop(user.id, None)
         if changes > 0:
             send_heartbeat_to_cloud()
         duration = time.time() - start_time
@@ -250,5 +262,6 @@ def retry_unsynced_summaries():
 def update_system_heartbeat():
     """Update system heartbeat to track app health."""
     system = SystemStatus.get_instance()
+    system.save()  # This updates updated_at automatically
     system.save()  # This updates updated_at automatically
     system.save()  # This updates updated_at automatically
