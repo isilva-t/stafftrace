@@ -93,6 +93,8 @@ Agent initiates all communication (outbound HTTPS only):
 - Local network remains isolated
 - Agent operates independently even during cloud outages
 
+![Agent Log Overview](assets/agent.png)
+
 ---
 
 ## Tech Stack
@@ -139,7 +141,6 @@ Agent initiates all communication (outbound HTTPS only):
 - **Multi-Site Ready**: Architecture supports multiple office locations via siteId
 - **Reliable Sync**: Database outbox pattern ensures no data loss during network issues
 
-![Agent Log Overview](assets/agent.png)
 
 ---
 
