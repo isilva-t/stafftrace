@@ -107,6 +107,13 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': os.getenv('CELERY_BROKER_URL'),
+    }
+}
+
 # Cloud API Configuration
 CLOUD_API_URL = os.getenv('CLOUD_API_URL')
 SITE_ID = os.getenv('SITE_ID')

@@ -6,7 +6,9 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Device, StateChange, User, HourlySummary, SystemStatus, AgentDowntime
 from .services import ping_device, send_heartbeat, send_hourly_summary
-from .constants import OFFLINE_THRESHOLD_SECONDS
+from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS
+from django.core.cache import cache
+import time
 
 # In-memory tracker for failed pings
 device_failure_tracker = {}
@@ -15,55 +17,73 @@ device_failure_tracker = {}
 @shared_task
 def ping_all_devices():
     """Ping all active devices and update state changes.
-    send heartbeat if there is changes"""
+    Uses Redis lock to prevent overlapping scans."""
 
-    changes = 0
-    for device in Device.objects.select_related('user').all():
-        is_online, detected_mac = ping_device(device.ip_address)
+    LOCK_KEY = "ping_all_devices_lock"
+    LOCK_TIMEOUT = PING_LOCK_TIMEOUT_SECONDS
 
-        # Get last state change for this device
-        last_change = device.state_changes.first()
+    lock_acquired = cache.add(LOCK_KEY, "locked", timeout=LOCK_TIMEOUT)
 
-        if is_online:
-            # Clear failure tracker
-            device_failure_tracker.pop(device.id, None)
+    if not lock_acquired:
+        print("⏭️  Skipping ping scan - previous scan still running")
+        return
 
-            # Check if device was offline
-            if not last_change or last_change.status == 0:
-                # Device came online
-                StateChange.objects.create(
-                    device=device,
-                    user=device.user,
-                    timestamp=timezone.now(),
-                    status=1  # went online
-                )
-                changes += 1
-                print(f"{device.user.employee_name} came ONLINE")
-        else:
-            # Ping failed
-            if device.id not in device_failure_tracker:
-                # First failure - start tracking
-                device_failure_tracker[device.id] = timezone.now()
+    start_time = time.time()
+    print("🔒 Lock acquired - starting device scan")
+    try:
+        changes = 0
+        for device in Device.objects.select_related('user').all():
+            is_online, detected_mac = ping_device(device.ip_address)
+
+            # Get last state change for this device
+            last_change = device.state_changes.first()
+
+            if is_online:
+                # Clear failure tracker
+                device_failure_tracker.pop(device.id, None)
+
+                # Check if device was offline
+                if not last_change or last_change.status == 0:
+                    # Device came online
+                    StateChange.objects.create(
+                        device=device,
+                        user=device.user,
+                        timestamp=timezone.now(),
+                        status=1  # went online
+                    )
+                    changes += 1
+                    print(f"{device.user.employee_name} came ONLINE")
             else:
-                # Check if threshold reached
-                time_failing = (
-                    timezone.now() - device_failure_tracker[device.id]).total_seconds()
+                # Ping failed
+                if device.id not in device_failure_tracker:
+                    # First failure - start tracking
+                    device_failure_tracker[device.id] = timezone.now()
+                else:
+                    # Check if threshold reached
+                    time_failing = (
+                        timezone.now() - device_failure_tracker[device.id]).total_seconds()
 
-                if time_failing >= OFFLINE_THRESHOLD_SECONDS:
-                    # Mark offline (only if was online)
-                    if last_change and last_change.status == 1:
-                        StateChange.objects.create(
-                            device=device,
-                            user=device.user,
-                            timestamp=timezone.now(),
-                            status=0  # went offline
-                        )
-                        changes += 1
-                        print(f"{device.user.employee_name} went OFFLINE")
-                    # Clear tracker
-                    device_failure_tracker.pop(device.id, None)
-    if changes > 0:
-        send_heartbeat_to_cloud()
+                    if time_failing >= OFFLINE_THRESHOLD_SECONDS:
+                        # Mark offline (only if was online)
+                        if last_change and last_change.status == 1:
+                            StateChange.objects.create(
+                                device=device,
+                                user=device.user,
+                                timestamp=timezone.now(),
+                                status=0  # went offline
+                            )
+                            changes += 1
+                            print(f"{device.user.employee_name} went OFFLINE")
+                        # Clear tracker
+                        device_failure_tracker.pop(device.id, None)
+        if changes > 0:
+            send_heartbeat_to_cloud()
+        duration = time.time() - start_time
+        print(
+            f"✅ Scan complete - {changes} changes detected in {duration:.2f}s")
+    finally:
+        cache.delete(LOCK_KEY)
+        print("🔓 Lock released")
 
 
 @shared_task
