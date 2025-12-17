@@ -143,28 +143,6 @@ Agent initiates all communication (outbound HTTPS only):
 
 ---
 
-## Design Decisions
-
-### Why Microservices Push Model?
-Keeps local data repository reliable even when agent is offline. On-premise data remains intact during network outages. Agent can continue monitoring and storing data locally, syncing when connectivity returns.
-
-### Why Polyglot Persistence?
-Learning new technologies through problem-solving. PostgreSQL for structured on-premise data with strong consistency. MongoDB for flexible cloud aggregation with dynamic schema evolution.
-
-### Why Outbox Pattern?
-Ensures data is never lost even if cloud API is temporarily unreachable. Failed sync attempts are retried automatically with exponential backoff. Database transactions guarantee data integrity.
-
-### Why Multi-Site from Day 1?
-Microservices architecture allows scalability from the start. Adding new offices requires no refactoring—just deploy another agent with different siteId. Backend and frontend already handle arrays of sites.
-
-### Why Conservative Offline Marking During Agent Downtime?
-Agent shows downtime information transparently with warning banners. Employees aren't incorrectly marked absent during known outages. System tracks agent health separately from employee presence.
-
-### Why Strict Agent Health Monitoring?
-Curiosity about network design patterns. Implements health thresholds based on last heartbeat timing with visual status indicators. Provides operational visibility into system reliability.
-
----
-
 ## Production Deployment
 
 **Infrastructure:**
