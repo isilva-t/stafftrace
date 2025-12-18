@@ -8,6 +8,7 @@ from .models import Device, StateChange, User, HourlySummary, SystemStatus, Agen
 from .services import ping_device, send_heartbeat, send_hourly_summary
 from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS, OFFLINE_FAILURE_COUNT
 from django.core.cache import cache
+from django.db.models import Prefetch
 import time
 
 # In-memory tracker for failed pings to user devices
@@ -46,7 +47,15 @@ def ping_all_devices():
     try:
         changes = 0
 
-        for user in User.objects.prefetch_related('devices', 'state_changes').all():
+        users = User.objects.prefetch_related(
+            Prefetch(
+                'state_changes',
+                queryset=StateChange.objects.all()[:1],
+                to_attr='latest_state'
+            )
+        ).all()
+
+        for user in users:
             any_device_online = False
             online_device = None
 
@@ -58,7 +67,7 @@ def ping_all_devices():
                     online_device = device
                     break
 
-            last_change = user.state_changes.first()
+            last_change = user.state_changes[0] if user.state_changes else None
 
             if any_device_online:
                 user_failure_tracker.pop(user.id, None)
