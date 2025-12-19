@@ -39,7 +39,7 @@ def get_mac_devices() -> set[str]:
 
     normalized = [get_normal_mac(m) for m in mac_list]
 
-    return set(mac_list)
+    return set(normalized)
 
 
 def get_online_devices(mac_devices) -> set[str]:
@@ -112,7 +112,8 @@ def ping_all_devices():
             online_device = None
 
             for device in user.devices.all():
-                is_online = device.mac_address in online_devices
+                is_online = get_normal_mac(
+                    device.mac_address) in online_devices
 
                 if is_online:
                     any_device_online = True
