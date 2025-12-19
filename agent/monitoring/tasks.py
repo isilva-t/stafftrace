@@ -124,87 +124,62 @@ def send_heartbeat_to_cloud():
 
 @shared_task
 def send_hourly_summary_to_cloud():
-    """Calculate hourly summary and send to cloud."""
-    # Calculate for the previous complete hour
+    """Calculate hourly presence span and send to cloud"""
     end_time = timezone.now().replace(minute=0, second=0, microsecond=0)
     start_time = end_time - timedelta(hours=1)
 
     summaries = []
 
     for user in User.objects.all():
-        # Get state changes in this hour
         changes = user.state_changes.filter(
             timestamp__gte=start_time,
             timestamp__lt=end_time
         ).order_by('timestamp')
 
-        # Get initial state (before hour started)
         initial_state = user.state_changes.filter(
             timestamp__lt=start_time
-        ).first()
+        ).order_by('-timestamp').first()
 
-        # Calculate metrics
-        first_seen = None
-        last_seen = None
-        minutes_online = 0
+        was_online_at_start = initial_state and initial_state.status == 1
 
-        currently_online = initial_state and initial_state.status == 1
-        online_start = start_time if currently_online else None
-
-        if not changes.exists() and currently_online:
-            # Was online entire hour
-            first_seen = start_time
-            last_seen = end_time
-            minutes_online = 60
-        else:
-            for change in changes:
-                if change.status == 1:  # Went online
-                    online_start = change.timestamp
-                    if first_seen is None:
-                        first_seen = change.timestamp
-                elif change.status == 0:  # Went offline
-                    if online_start:
-                        minutes_online += (change.timestamp -
-                                           online_start).total_seconds() / 60
-                        last_seen = change.timestamp
-                        online_start = None
-
-            # If still online at end of hour
-            if online_start:
-                minutes_online += (end_time -
-                                   online_start).total_seconds() / 60
+        if not changes.exists():
+            if was_online_at_start:
+                first_seen = start_time
                 last_seen = end_time
+            else:
+                continue
+        else:
+            first_change = changes.first()
+            last_change = changes.last()
+            first_seen = start_time if was_online_at_start else first_change.timestamp
+            last_seen = end_time if last_change.status == 1 else last_change.timestamp
 
-        # Only send if there was activity
-        if first_seen:
-            # Save locally
-            summary_obj, created = HourlySummary.objects.update_or_create(
-                user=user,
-                hour=start_time,
-                defaults={
-                    'first_seen': first_seen,
-                    'last_seen': last_seen,
-                    'minutes_online': int(minutes_online),
-                    'synced': False
-                }
-            )
+        minutes_present = (last_seen - first_seen).total_seconds() / 60
 
-            # Prepare for cloud
-            payload = {
-                'employeeId': user.id,
-                'employeeName': user.fake_name,
-                'fakeName': user.fake_name,
-                'date': start_time.date().isoformat(),
-                'hour': start_time.hour,
-                'firstSeen': first_seen.time().isoformat(),
-                'lastSeen': last_seen.time().isoformat(),
-                'minutesOnline': int(minutes_online)
+        summary_obj, created = HourlySummary.objects.update_or_create(
+            user=user,
+            hour=start_time,
+            defaults={
+                'first_seen': first_seen,
+                'last_seen': last_seen,
+                'minutes_online': int(minutes_present),
+                'synced': False
             }
+        )
 
-            summaries.append((payload, summary_obj))
+        payload = {
+            'employeeId': user.id,
+            'employeeName': user.fake_name,
+            'fakeName': user.fake_name,
+            'date': start_time.date().isoformat(),
+            'hour': start_time.hour,
+            'firstSeen': first_seen.time().isoformat(),
+            'lastSeen': last_seen.time().isoformat(),
+            'minutesOnline': int(minutes_present)
+        }
+        summaries.append((payload, summary_obj))
 
     if summaries:
-
         unsynced_downtimes = AgentDowntime.objects.filter(synced=False)
         downtime_data = None
 
