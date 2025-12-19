@@ -67,7 +67,7 @@ def ping_all_devices():
                     online_device = device
                     break
 
-            last_change = user.state_changes[0] if user.state_changes else None
+            last_change = user.latest_state[0] if user.latest_state else None
 
             if any_device_online:
                 user_failure_tracker.pop(user.id, None)
