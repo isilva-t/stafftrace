@@ -140,7 +140,7 @@ Agent initiates all communication (outbound HTTPS only):
 **Current Scale:**
 - 6-10 employees per site
 - Multiple devices per employee (already implemented)
-- Single office deployment (Porto)
+- Single office deployment
 
 **Architecture Supports:**
 - Multiple devices per employee: ✅ Implemented
