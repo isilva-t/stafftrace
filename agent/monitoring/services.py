@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 
 
-def ping_device(ip_address, timeout=1):
+def ping_device(ip_address, timeout=4):
     """
     Ping a device using ARP and return success/failure.
 
@@ -19,10 +19,8 @@ def ping_device(ip_address, timeout=1):
     Returns:
         bool: True if device responded, False otherwise
     """
-    # command = ['ping', '-c', '1', '-W', str(timeout), ip_address]
-
     interface = settings.NETWORK_INTERFACE
-    command = ['arping', '-c', '1', '-I',
+    command = ['arping', '-c', '4', '-I',
                interface, '-w', str(timeout), ip_address]
 
     try:
@@ -36,13 +34,13 @@ def ping_device(ip_address, timeout=1):
         if result.returncode != 0:
             return (False, None)
         import re
-        mac_match = re.search(r'from ([0-9a-f:]{17})', result.stdout)
-        detected_mac = get_normal_mac(mac_match.group(1))
-        if detected_mac:
-            return (True, detected_mac)
+        mac_match = re.search(r'from ([0-9a-fA-F:]{17})', result.stdout)
+        if mac_match:
+            detected_mac = get_normal_mac(mac_match.group(1))
+            if detected_mac:
+                return (True, detected_mac)
         return (True, None)
 
-        return result.returncode == 0
     except subprocess.TimeoutExpired:
         return (False, None)
     except Exception as e:

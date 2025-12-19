@@ -11,7 +11,6 @@ from django.core.cache import cache
 from django.db.models import Prefetch
 import time
 
-# In-memory tracker for failed pings to user devices
 user_failure_tracker = {}
 
 
@@ -76,7 +75,7 @@ def ping_all_devices():
                     save_status(device, 1)
                     changes += 1
 
-            else:  # arp failed
+            else:
                 if last_change and last_change.status == 1:
                     print(f"All devices failed for {user.fake_name}. 🟡")
                 if user.id not in user_failure_tracker:
