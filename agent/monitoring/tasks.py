@@ -37,8 +37,8 @@ def get_mac_devices() -> set[str]:
         mac_address=''
     ).values_list('mac_address', flat=True)
 
-    for m in mac_list:
-        m = get_normal_mac(m)
+    for i in range(len(mac_list)):
+        mac_list[i] = get_normal_mac(mac_list[i])
 
     return set(mac_list)
 
