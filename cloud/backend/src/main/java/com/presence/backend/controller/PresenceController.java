@@ -158,6 +158,9 @@ public class PresenceController {
 					record.getFakeName(),
 					finalIsAuthenticated);
 			record.setEmployeeName(displayName);
+
+			double hours = calculateTimeSpan(record.getFirstSeen(), record.getLastSeen());
+			record.setHoursPresent(hours);
 		});
 
 		return ResponseEntity.ok(records);
@@ -197,7 +200,11 @@ public class PresenceController {
 							finalIsAuthenticated);
 
 					double totalHours = employeeRecords.stream()
-							.mapToDouble(DailyPresence::getHoursPresent)
+							.mapToDouble(record -> {
+								LocalTime firstSeen = record.getFirstSeen();
+								LocalTime lastSeen = record.getLastSeen();
+								return calculateTimeSpan(firstSeen, lastSeen);
+							})
 							.sum();
 
 					int daysPresent = employeeRecords.size();
@@ -267,7 +274,7 @@ public class PresenceController {
 			if (record != null) {
 				firstSeen = record.getFirstSeen() != null ? record.getFirstSeen().toString() : null;
 				lastSeen = record.getLastSeen() != null ? record.getLastSeen().toString() : null;
-				hours = record.getHoursPresent() != null ? record.getHoursPresent() : 0.0;
+				hours = calculateTimeSpan(firstSeen, lastSeen);
 
 				if (hours >= 8.0) {
 					status = "Full day";
@@ -320,5 +327,35 @@ public class PresenceController {
 		List<AgentDowntime> downtimes = agentDowntimeRepository.findByDowntimeStartBetween(startOfDay, endOfDay);
 
 		return ResponseEntity.ok(downtimes);
+	}
+
+	private double calculateTimeSpan(String firstSeen, String lastSeen) {
+		if (firstSeen == null || lastSeen == null) {
+			return 0.0;
+		}
+		String[] firstParts = firstSeen.split(":");
+		String[] lastParts = lastSeen.split(":");
+
+		int firstHour = Integer.parseInt(firstParts[0]);
+		int firstMinute = Integer.parseInt(firstParts[1]);
+
+		int lastHour = Integer.parseInt(lastParts[0]);
+		int lastMinute = Integer.parseInt(lastParts[1]);
+
+		int firstMinutes = firstHour * 60 + firstMinute;
+		int lastMinutes = lastHour * 60 + lastMinute;
+
+		return (lastMinutes - firstMinutes) / 60.0;
+	}
+
+	private double calculateTimeSpan(LocalTime firstSeen, LocalTime lastSeen) {
+		if (firstSeen == null || lastSeen == null) {
+			return 0.0;
+		}
+
+		int firstMinutes = firstSeen.getHour() * 60 + firstSeen.getMinute();
+		int lastMinutes = lastSeen.getHour() * 60 + lastSeen.getMinute();
+
+		return (lastMinutes - firstMinutes) / 60.0;
 	}
 }
