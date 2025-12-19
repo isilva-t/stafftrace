@@ -17,6 +17,7 @@ DEBUG = os.getenv('DEBUG') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 AGENT_AUTH_TOKEN = os.getenv('AGENT_AUTH_TOKEN')
 NETWORK_INTERFACE = os.getenv('NETWORK_INTERFACE')
+SUBNET = os.getenv('SUBNET')
 
 # Application definition
 INSTALLED_APPS = [

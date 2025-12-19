@@ -5,11 +5,14 @@ from celery import shared_task
 from django.utils import timezone
 from datetime import timedelta
 from .models import Device, StateChange, User, HourlySummary, SystemStatus, AgentDowntime
-from .services import ping_device, send_heartbeat, send_hourly_summary
-from .constants import OFFLINE_THRESHOLD_SECONDS, PING_LOCK_TIMEOUT_SECONDS, OFFLINE_FAILURE_COUNT
+from .services import send_heartbeat, send_hourly_summary
+from .constants import PING_LOCK_TIMEOUT_SECONDS, OFFLINE_FAILURE_COUNT
 from django.core.cache import cache
 from django.db.models import Prefetch
+from .services import get_normal_mac
+from config.settings import NETWORK_INTERFACE, SUBNET
 import time
+import subprocess
 
 user_failure_tracker = {}
 
@@ -25,6 +28,55 @@ def save_status(device, new_status):
         print(f"{device.user.fake_name} came ONLINE 🟢")
     else:
         print(f"{device.user.fake_name} went OFFLINE 🔴")
+
+
+def get_mac_devices() -> set[str]:
+    mac_list = Device.objects.filter(
+        mac_address__isnull=False
+    ).exclude(
+        mac_address=''
+    ).values_list('mac_address', flat=True)
+
+    for m in mac_list:
+        m = get_normal_mac(m)
+
+    return set(mac_list)
+
+
+def get_online_devices(mac_devices) -> set[str]:
+    command = [
+        'arp-scan',
+        '--interface', NETWORK_INTERFACE,
+        '--retry', '4',
+        '--timeout', '500',
+        SUBNET
+    ]
+
+    try:
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=30,
+            text=True,
+            check=True
+        )
+        mac_adresses = set()
+
+        for line in result.stdout.split('\n'):
+            parts = line.lower().split()
+            for p in parts:
+                if p.count(':') == 5 and p in mac_devices:
+                    mac_adresses.add(p)
+
+        return mac_adresses
+
+    except subprocess.TimeoutExpired:
+        return set()
+    except subprocess.CalledProcessError as e:
+        return set()
+    except Exception as e:
+        return set()
 
 
 @shared_task
@@ -53,13 +105,15 @@ def ping_all_devices():
                 to_attr='latest_state'
             )
         ).all()
+        mac_devices = get_mac_devices()
+        online_devices = get_online_devices(mac_devices)
 
         for user in users:
             any_device_online = False
             online_device = None
 
             for device in user.devices.all():
-                is_online, detected_mac = ping_device(device.ip_address)
+                is_online = device.mac_address in online_devices
 
                 if is_online:
                     any_device_online = True
