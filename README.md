@@ -15,9 +15,8 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 ---
 
 ## Architecture Overview
-![StaffTrace Architecture](assets/architecture.svg)
 
-```
+![StaffTrace Architecture](assets/architecture.svg)
 
 ### Three-Component Microservices Design
 
@@ -89,8 +88,6 @@ Agent initiates all communication (outbound HTTPS only):
 - Kubernetes ConfigMaps and Secrets
 - Shared secret token authentication between agent and backend
 - HTTPS enabled across all services
-
-**URL:** https://stafftrace.xyz
 
 ![Main Dashboard](assets/data-flow.png)
 
