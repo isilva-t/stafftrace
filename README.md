@@ -133,6 +133,8 @@ Agent initiates all communication (outbound HTTPS only):
 
 **URL:** https://stafftrace.xyz
 
+![Main Dashboard](assets/data-flow.png)
+
 ---
 
 ## Scalability Considerations
@@ -155,6 +157,10 @@ Agent initiates all communication (outbound HTTPS only):
 - Indexed MongoDB queries for fast aggregation
 - Agent data retained locally for compliance and independence
 - Outbox pattern with retry queue for reliable cloud sync
+
+---
+## Demo Video
+![Main Dashboard](assets/demo.mp4)
 
 ---
 
