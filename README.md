@@ -1,4 +1,4 @@
-# StaffTrace
+# StaffTrace - employee presense monitor
 
 ## What It Does
 
