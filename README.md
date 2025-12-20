@@ -15,49 +15,8 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 ---
 
 ## Architecture Overview
+![StaffTrace Architecture](assets/architecture.svg)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        ON-PREMISE NETWORK                       │
-│                                                                 │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │                    Django Agent                           │  │
-│  │  • Monitors device presence (arp-scan)                    │  │
-│  │  • Tracks multiple devices per employee                   │  │
-│  │  • Stores locally in PostgreSQL                           │  │
-│  │  • Celery periodic tasks                                  │  │
-│  └───────────────────┬───────────────────────────────────────┘  │
-│                      │                                          │
-│                      │ HTTPS (Push Model)                       │
-│                      │ • Heartbeats (5 min)                     │
-│                      │ • Hourly summaries                       │
-└──────────────────────┼──────────────────────────────────────────┘
-                       │
-                       ▼
-         ┌─────────────────────────────┐
-         │    GOOGLE CLOUD PLATFORM    │
-         │                             │
-         │  ┌────────────────────────┐ │
-         │  │  Spring Boot Backend   │ │
-         │  │  • REST API            │ │
-         │  │  • JWT Authentication  │ │
-         │  │  • MongoDB Atlas       │ │
-         │  └──────────┬─────────────┘ │
-         │             │               │
-         │             │ HTTP/JSON     │
-         │             ▼               │
-         │  ┌────────────────────────┐ │
-         │  │  Angular Frontend      │ │
-         │  │  • Real-time dashboard │ │
-         │  │  • Reports & analytics │ │
-         │  │  • Nginx web server    │ │
-         │  └────────────────────────┘ │
-         │                             │
-         └─────────────────────────────┘
-                       │
-                       │ HTTPS
-                       ▼
-                   End Users
 ```
 
 ### Three-Component Microservices Design
