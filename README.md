@@ -10,8 +10,9 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 **Live Demo:** https://stafftrace.xyz
 
-![Main Dashboard](assets/dashboard.png)
-
+<video src="https://github.com/isilva-t/stafftrace/raw/main/assets/demo.mp4" controls width="100%">
+  Your browser doesn't support video playback.
+</video>
 ---
 
 ## Architecture Overview
