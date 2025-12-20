@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1100 1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Arrow marker -->
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
+    </marker>
+  </defs>
+  
+  <!-- Blue gradient background -->
+  <rect width="1100" height="1000" fill="url(#blueBg)"/>
+  <defs>
+    <linearGradient id="blueBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main white card -->
+  <rect x="60" y="80" width="980" height="840" rx="20" fill="#ffffff" filter="url(#shadow)"/>
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dx="0" dy="10" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Title with icon -->
+  <text x="550" y="150" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#1e293b" text-anchor="middle">
+    📊 StaffTrace Architecture
+  </text>
+  
+  <!-- ON-PREMISE SECTION -->
+  <rect x="300" y="220" width="500" height="130" rx="15" fill="#3b82f6" opacity="0.95"/>
+  <text x="550" y="255" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    🖥️ Django Agent
+  </text>
+  <text x="550" y="280" font-family="Arial, sans-serif" font-size="14" fill="#e0e7ff" text-anchor="middle">
+    On-premise monitoring
+  </text>
+  <text x="550" y="305" font-family="Arial, sans-serif" font-size="13" fill="#e0e7ff" text-anchor="middle">
+    Device presence tracking · PostgreSQL storage
+  </text>
+  <text x="550" y="330" font-family="Arial, sans-serif" font-size="13" fill="#e0e7ff" text-anchor="middle">
+    Celery tasks · arp-scan
+  </text>
+  
+  <!-- Arrow 1: On-premise to Cloud -->
+  <path d="M 550 360 L 550 420" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <rect x="570" y="375" width="150" height="30" rx="6" fill="#f1f5f9"/>
+  <text x="645" y="396" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#475569" text-anchor="middle">
+    HTTPS Push
+  </text>
+  
+  <!-- Cloud Container Border -->
+  <rect x="270" y="415" width="560" height="355" rx="20" fill="none" stroke="#0ea5e9" stroke-width="3" stroke-dasharray="8,5" opacity="0.6"/>
+  
+  <!-- CLOUD SECTION HEADER -->
+  <rect x="320" y="425" width="460" height="35" rx="8" fill="#0ea5e9" opacity="0.2"/>
+  <text x="550" y="449" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#0369a1" text-anchor="middle">
+    ☁️ Google Cloud Platform
+  </text>
+  
+  <!-- Spring Boot Backend -->
+  <rect x="300" y="470" width="500" height="130" rx="15" fill="#3b82f6" opacity="0.95"/>
+  <text x="550" y="505" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    ⚙️ Spring Boot Backend
+  </text>
+  <text x="550" y="530" font-family="Arial, sans-serif" font-size="14" fill="#e0e7ff" text-anchor="middle">
+    Cloud processing layer
+  </text>
+  <text x="550" y="555" font-family="Arial, sans-serif" font-size="13" fill="#e0e7ff" text-anchor="middle">
+    REST API · MongoDB Atlas
+  </text>
+  <text x="550" y="580" font-family="Arial, sans-serif" font-size="13" fill="#e0e7ff" text-anchor="middle">
+    Kubernetes (GKE) · Java
+  </text>
+  
+  <!-- Arrow 2: Backend to Frontend -->
+  <path d="M 550 610 L 550 630" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  
+  <!-- Angular Frontend -->
+  <rect x="300" y="630" width="500" height="130" rx="15" fill="#60a5fa" opacity="0.95"/>
+  <text x="550" y="665" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">
+    🌐 Angular Frontend
+  </text>
+  <text x="550" y="690" font-family="Arial, sans-serif" font-size="14" fill="#dbeafe" text-anchor="middle">
+    User interface
+  </text>
+  <text x="550" y="715" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe" text-anchor="middle">
+    Real-time dashboard · Daily/Monthly Analytics
+  </text>
+  <text x="550" y="740" font-family="Arial, sans-serif" font-size="13" fill="#dbeafe" text-anchor="middle">
+    TypeScript · Nginx
+  </text>
+  
+  <!-- Arrow 3: Frontend to Users -->
+  <path d="M 550 770 L 550 810" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  <rect x="570" y="780" width="80" height="25" rx="6" fill="#f1f5f9"/>
+  <text x="610" y="798" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#475569" text-anchor="middle">
+    HTTPS
+  </text>
+  
+  <!-- End Users -->
+  <text x="550" y="840" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b" text-anchor="middle">
+    👥 End Users
+  </text>
+  
+  <!-- Production URL -->
+  <text x="550" y="865" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">
+    https://stafftrace.xyz
+  </text>
+</svg>
