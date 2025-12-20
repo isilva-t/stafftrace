@@ -10,9 +10,8 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 **Live Demo:** https://stafftrace.xyz
 
-<video src="https://github.com/isilva-t/stafftrace/raw/main/assets/demo.mp4" controls width="100%">
-  Your browser doesn't support video playback.
-</video>
+![Agent Log Overview](assets/dashboard.png)
+
 ---
 
 ## Architecture Overview
@@ -161,7 +160,8 @@ Agent initiates all communication (outbound HTTPS only):
 
 ---
 ## Demo Video
-![Main Dashboard](assets/demo.mp4)
+
+https://github.com/user-attachments/assets/7400bca7-0237-405d-9c1c-cd62c7cf7c69
 
 ---
 
