@@ -10,7 +10,7 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 **Live Demo:** https://stafftrace.xyz
 
-![Agent Log Overview](assets/dashboard.png)
+![Dashboard](assets/dashboard.png)
 
 ---
 
@@ -66,15 +66,16 @@ Agent initiates all communication (outbound HTTPS only):
 - **Multi-Site Ready**: Architecture supports multiple office locations via siteId
 - **Reliable Sync**: Database outbox pattern ensures no data loss during network issues
 
+![Monthly Report](assets/monthly.png)
 
 ---
 
 ## Production Deployment
 
 **Infrastructure:**
-- Google Kubernetes Engine (2-node cluster, europe-west1-b)
+- Google Kubernetes Engine
 - MongoDB Atlas (managed database service, free tier)
-- Cloudflare (DNS management, SSL/TLS termination, CDN)
+- Cloudflare (DNS management, SSL/TLS termination)
 - Google Container Registry (Docker image storage)
 
 **Automation:**
@@ -118,64 +119,6 @@ Agent initiates all communication (outbound HTTPS only):
 ## Demo Video
 
 https://github.com/user-attachments/assets/7400bca7-0237-405d-9c1c-cd62c7cf7c69
-
----
-
-## Repository Structure
-
-```
-stafftrace/
-├── agent/                      # Django on-premise service
-│   ├── monitoring/
-│   │   ├── models.py          # Device, StateChange, HourlySummary, AgentDowntime
-│   │   ├── tasks.py           # Celery periodic tasks (ping, sync)
-│   │   └── views.py           # Health endpoints
-│   ├── config/
-│   │   ├── settings.py
-│   │   └── celery.py
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
-├── backend/                    # Spring Boot cloud service  
-│   ├── src/
-│   │   └── main/
-│   │       ├── java/
-│   │       │   └── com/stafftrace/
-│   │       │       ├── controller/  # REST endpoints
-│   │       │       ├── service/     # Business logic
-│   │       │       ├── model/       # MongoDB documents
-│   │       │       └── security/    # JWT configuration
-│   │       └── resources/
-│   │           └── application.properties
-│   ├── pom.xml
-│   ├── Dockerfile
-│   └── .env.example
-├── frontend/                   # Angular dashboard
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/      # UI components
-│   │   │   ├── services/        # HTTP services
-│   │   │   └── models/          # TypeScript interfaces
-│   │   └── environments/
-│   ├── package.json
-│   ├── Dockerfile
-│   └── nginx.conf
-├── kubernetes/                 # K8s manifests
-│   ├── configmap.yaml
-│   ├── secrets.yaml
-│   ├── backend-deployment.yaml
-│   └── frontend-deployment.yaml
-├── terraform/                  # Infrastructure as Code
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
-│   └── README.md
-├── .github/
-│   └── workflows/
-│       └── deploy.yml         # CI/CD pipeline
-├── docker-compose.yml         # Local development
-└── README.md
-```
 
 ---
 
