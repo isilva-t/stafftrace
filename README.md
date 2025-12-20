@@ -108,7 +108,7 @@ Agent initiates all communication (outbound HTTPS only):
 - Multi-site deployments: ✅ Ready (siteId field implemented)
 
 **Performance Optimizations:**
-- State-based storage (not ping/arping-based): 240x reduction in data volume
+- State-based storage (not ping/arping-based)
 - Only state changes are recorded (online→offline transitions)
 - Indexed MongoDB queries for fast aggregation
 - Agent data retained locally for compliance and independence
