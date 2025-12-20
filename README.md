@@ -16,7 +16,7 @@ Demonstrates microservices architecture and cloud deployment in production, focu
 
 ## Architecture Overview
 
-![StaffTrace Architecture](assets/architecture.svg)
+![StaffTrace Architecture](assets/architecture-thin.svg)
 
 ### Three-Component Microservices Design
 
