@@ -8,7 +8,7 @@ Employee presence monitoring system that tracks attendance via network connectio
 
 Demonstrates microservices architecture and cloud deployment in production, focusing on reliability, scalability, and real-world DevOps patterns.
 
-**Live Demo:** https://stafftrace.xyz
+**Live Demo: ** https://stafftrace.xyz
 
 ![Dashboard](assets/dashboard.png)
 
